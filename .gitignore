@@ -1,0 +1,16 @@
+# Build outputs
+overlay/bin/
+overlay/obj/
+*.user
+*.suo
+
+# Runtime cache
+sidecars/pets/cache/
+
+# Dependencies
+node_modules/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vs/

@@ -1,0 +1,2570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Antigravity Pets</title>
+  <script src="/preload.js"></script>
+  <style>
+    /* ------------------------------------------------------------------
+       Tokens
+       Primitives name a value; semantic tokens name a role. Components
+       only reference semantic tokens.
+       ------------------------------------------------------------------ */
+    :root {
+      color-scheme: light dark;
+
+      /* Neutral ramp (one family, slightly warm) */
+      --gray-0: #ffffff;
+      --gray-50: #f6f6f5;
+      --gray-100: #efefed;
+      --gray-150: #e8e8e5;
+      --gray-200: #e1e1dd;
+      --gray-300: #cfcfca;
+      --gray-500: #85858c;
+      --gray-600: #66666d;
+      --gray-700: #48484e;
+      --gray-900: #1b1b1e;
+
+      --gray-d-950: #0e0e10;
+      --gray-d-900: #161618;
+      --gray-d-850: #1d1d20;
+      --gray-d-800: #242428;
+      --gray-d-750: #2c2c31;
+      --gray-d-700: #36363c;
+      --gray-d-500: #6f6f78;
+      --gray-d-400: #9b9ba4;
+      --gray-d-200: #c9c9cf;
+      --gray-d-50: #f3f3f4;
+
+      /* Status ramps — usage only */
+      --green-500: #16a34a;
+      --green-700: #15803d;
+      --green-400: #4ade80;
+      --amber-500: #d97706;
+      --amber-700: #92400e;
+      --amber-300: #fcd34d;
+      --red-500: #dc2626;
+      --red-700: #b91c1c;
+      --red-400: #f87171;
+
+      /* Semantic — light */
+      --color-bg-canvas: var(--gray-50);
+      --color-bg-surface: var(--gray-0);
+      --color-bg-raised: var(--gray-0);
+      --color-bg-inset: var(--gray-100);
+      --color-bg-hover: var(--gray-150);
+      --color-bg-selected: var(--gray-200);
+
+      --color-text-primary: var(--gray-900);
+      --color-text-secondary: var(--gray-700);
+      --color-text-muted: var(--gray-600);
+
+      --color-border-hairline: var(--gray-150);
+      --color-border-control: var(--gray-500);
+
+      --color-accent-solid: var(--gray-900);
+      --color-accent-solid-hover: #2c2c30;
+      --color-text-on-accent: var(--gray-0);
+      --color-focus-ring: var(--gray-900);
+
+      --color-status-ok: var(--green-500);
+      --color-status-ok-text: var(--green-700);
+      --color-status-warn: var(--amber-500);
+      --color-status-warn-text: var(--amber-700);
+      --color-status-low: var(--red-500);
+      --color-status-low-text: var(--red-700);
+      --color-track: var(--gray-150);
+
+      --color-stage-sky: var(--gray-100);
+      --color-stage-ground: var(--gray-150);
+      --color-stage-horizon: var(--gray-300);
+      --color-stage-floor-shadow: rgba(27, 27, 30, 0.14);
+
+      --color-image-outline: oklch(0 0 0 / 0.08);
+
+      --shadow-border:
+        0px 0px 0px 1px oklch(0 0 0 / 0.06),
+        0px 1px 2px -1px oklch(0 0 0 / 0.06),
+        0px 2px 4px 0px oklch(0 0 0 / 0.04);
+      --shadow-border-hover:
+        0px 0px 0px 1px oklch(0 0 0 / 0.08),
+        0px 1px 2px -1px oklch(0 0 0 / 0.08),
+        0px 2px 4px 0px oklch(0 0 0 / 0.06);
+      --shadow-raised:
+        0px 0px 0px 1px oklch(0 0 0 / 0.07),
+        0px 6px 16px -4px oklch(0 0 0 / 0.12),
+        0px 14px 32px -12px oklch(0 0 0 / 0.14);
+
+      /* Type scale: role = size + line-height */
+      --font-sans: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, "SF Pro Text", Roboto, sans-serif;
+      --text-caption: 0.6875rem;  /* 11 */
+      --text-label: 0.75rem;      /* 12 */
+      --text-body: 0.8125rem;     /* 13 */
+      --text-title: 0.875rem;     /* 14 */
+
+      /* Radii */
+      --radius-xs: 6px;
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 12px;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.2, 0, 0, 1);
+      --ease-in-out: cubic-bezier(0.45, 0, 0.1, 1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg-canvas: var(--gray-d-950);
+        --color-bg-surface: var(--gray-d-900);
+        --color-bg-raised: var(--gray-d-800);
+        --color-bg-inset: var(--gray-d-850);
+        --color-bg-hover: var(--gray-d-800);
+        --color-bg-selected: var(--gray-d-750);
+
+        --color-text-primary: var(--gray-d-50);
+        --color-text-secondary: var(--gray-d-200);
+        --color-text-muted: var(--gray-d-400);
+
+        --color-border-hairline: var(--gray-d-800);
+        --color-border-control: var(--gray-d-500);
+
+        --color-accent-solid: var(--gray-d-50);
+        --color-accent-solid-hover: #ffffff;
+        --color-text-on-accent: var(--gray-d-900);
+        --color-focus-ring: var(--gray-d-50);
+
+        --color-status-ok: var(--green-400);
+        --color-status-ok-text: var(--green-400);
+        --color-status-warn: var(--amber-300);
+        --color-status-warn-text: var(--amber-300);
+        --color-status-low: var(--red-400);
+        --color-status-low-text: var(--red-400);
+        --color-track: var(--gray-d-750);
+
+        --color-stage-sky: var(--gray-d-850);
+        --color-stage-ground: var(--gray-d-800);
+        --color-stage-horizon: var(--gray-d-700);
+        --color-stage-floor-shadow: rgba(0, 0, 0, 0.4);
+
+        --color-image-outline: oklch(1 0 0 / 0.08);
+
+        --shadow-border: 0 0 0 1px oklch(1 0 0 / 0.07);
+        --shadow-border-hover: 0 0 0 1px oklch(1 0 0 / 0.12);
+        --shadow-raised: 0 0 0 1px oklch(1 0 0 / 0.1), 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+      }
+    }
+
+    /* ------------------------------------------------------------------
+       Base
+       ------------------------------------------------------------------ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px 14px 20px;
+      background: var(--color-bg-canvas);
+      color: var(--color-text-primary);
+      font-family: var(--font-sans);
+      font-size: var(--text-body);
+      line-height: 1.45;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    button, input, select {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      appearance: none;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      border: 1px solid transparent;
+      background: none;
+      cursor: pointer;
+    }
+
+    button:disabled { cursor: not-allowed; }
+
+    :focus-visible {
+      outline: 2px solid var(--color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    svg.icon {
+      width: 16px;
+      height: 16px;
+      flex: none;
+      display: block;
+    }
+
+    /* Press feedback: every enabled button settles to 0.96 */
+    .pressable {
+      transition-property: scale, background-color, box-shadow, color, border-color;
+      transition-duration: 150ms;
+      transition-timing-function: ease-out;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .pressable:not(:disabled):active { scale: 0.96; }
+    }
+
+    /* ------------------------------------------------------------------
+       Buttons
+       ------------------------------------------------------------------ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      font-size: var(--text-label);
+      font-weight: 500;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+
+    .btn.has-icon {
+      padding-inline-start: 9px;
+      padding-inline-end: 11px;
+    }
+
+    .btn-secondary {
+      background: var(--color-bg-surface);
+      box-shadow: var(--shadow-border);
+      color: var(--color-text-primary);
+    }
+
+    @media (hover: hover) {
+      .btn-secondary:hover:not(:disabled) {
+        background: var(--color-bg-inset);
+        box-shadow: var(--shadow-border-hover);
+      }
+    }
+
+    .btn-secondary[data-open="true"] {
+      background: var(--color-bg-selected);
+      box-shadow: none;
+    }
+
+    .btn-ghost {
+      color: var(--color-text-secondary);
+    }
+
+    @media (hover: hover) {
+      .btn-ghost:hover:not(:disabled) {
+        background: var(--color-bg-hover);
+        color: var(--color-text-primary);
+      }
+    }
+
+    .btn:disabled { opacity: 0.4; }
+
+    .icon-btn {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      flex: none;
+      padding: 0;
+      border-radius: var(--radius-xs);
+      color: var(--color-text-muted);
+    }
+
+    @media (hover: hover) {
+      .icon-btn:hover:not(:disabled) {
+        background: var(--color-bg-hover);
+        color: var(--color-text-primary);
+      }
+    }
+
+    .icon-btn:disabled { opacity: 0.4; }
+
+    /* ------------------------------------------------------------------
+       Header
+       ------------------------------------------------------------------ */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .identity {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    /* 10px outer = 7px inner + 3px padding */
+    .avatar {
+      flex: none;
+      padding: 3px;
+      border-radius: var(--radius-md);
+      background: var(--color-bg-surface);
+      box-shadow: var(--shadow-border);
+    }
+
+    .avatar-inner {
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      background: var(--color-bg-inset);
+      outline: 1px solid var(--color-image-outline);
+      outline-offset: -1px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .avatar-sprite {
+      width: 30px;
+      height: 32px;
+      background-repeat: no-repeat;
+      background-size: 800% auto;
+      background-position: 0% 0%;
+      image-rendering: pixelated;
+    }
+
+    .avatar-sprite.is-swapping {
+      animation: avatar-in 300ms var(--ease-out) both;
+    }
+
+    @keyframes avatar-in {
+      from { opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .avatar-sprite.is-swapping { animation-name: avatar-in-move; }
+
+      @keyframes avatar-in-move {
+        from { opacity: 0; scale: 0.8; filter: blur(2px); }
+      }
+    }
+
+    .identity-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: var(--text-title);
+      line-height: 1.3;
+      font-weight: 600;
+      letter-spacing: -0.006em;
+    }
+
+    .identity-sub {
+      font-size: var(--text-label);
+      line-height: 1.3;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ------------------------------------------------------------------
+       Section scaffolding
+       ------------------------------------------------------------------ */
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-label {
+      margin: 0;
+      padding-inline: 2px;
+      font-size: var(--text-label);
+      line-height: 1.3;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    .card {
+      background: var(--color-bg-surface);
+      border: 1px solid transparent;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-border);
+    }
+
+    /* ------------------------------------------------------------------
+       Stage
+       ------------------------------------------------------------------ */
+    .stage {
+      position: relative;
+      height: 260px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid transparent;
+      box-shadow: var(--shadow-border);
+      background: linear-gradient(
+        to bottom,
+        var(--color-stage-sky) 0%,
+        var(--color-stage-sky) 76%,
+        var(--color-stage-ground) 76%,
+        var(--color-stage-ground) 100%
+      );
+    }
+
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      top: 76%;
+      height: 1px;
+      background: var(--color-stage-horizon);
+      pointer-events: none;
+    }
+
+    #stage-canvas {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      image-rendering: pixelated;
+      user-select: none;
+      touch-action: manipulation;
+      border-radius: inherit;
+    }
+
+    #stage-canvas:focus-visible {
+      outline-offset: -3px;
+    }
+
+    .stage-bar {
+      position: absolute;
+      inset-inline: 10px;
+      bottom: 10px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .stage-actions {
+      display: flex;
+      gap: 6px;
+      pointer-events: auto;
+    }
+
+    .chip {
+      min-height: 28px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      background: var(--color-bg-surface);
+      box-shadow: var(--shadow-border);
+      color: var(--color-text-secondary);
+      font-size: var(--text-label);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    @media (hover: hover) {
+      .chip:hover:not(:disabled) {
+        color: var(--color-text-primary);
+        box-shadow: var(--shadow-border-hover);
+      }
+    }
+
+    .stage-hint {
+      font-size: var(--text-label);
+      line-height: 1.3;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+      transition-property: opacity;
+      transition-duration: 200ms;
+      transition-timing-function: ease-out;
+    }
+
+    .stage-hint.is-faded { opacity: 0; }
+
+    /* ------------------------------------------------------------------
+       Usage popover
+       ------------------------------------------------------------------ */
+    .usage {
+      position: absolute;
+      z-index: 10;
+      top: 10px;
+      left: 10px;
+      width: min(312px, calc(100% - 20px));
+      max-height: calc(100% - 20px);
+      display: flex;
+      flex-direction: column;
+      background: var(--color-bg-raised);
+      border: 1px solid transparent;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-raised);
+      visibility: hidden;
+      opacity: 0;
+      transform-origin: var(--origin, bottom center);
+      transition-property: opacity, visibility;
+      transition-duration: 150ms, 0s;
+      transition-delay: 0s, 150ms;
+      transition-timing-function: ease-out;
+    }
+
+    .usage.is-open {
+      visibility: visible;
+      opacity: 1;
+      transition-duration: 220ms, 0s;
+      transition-delay: 0s, 0s;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .usage {
+        scale: 0.96;
+        filter: blur(4px);
+        transition-property: opacity, scale, filter, visibility;
+        transition-duration: 150ms, 150ms, 150ms, 0s;
+        transition-delay: 0s, 0s, 0s, 150ms;
+      }
+
+      .usage.is-open {
+        scale: 1;
+        filter: blur(0px);
+        transition-duration: 260ms, 260ms, 260ms, 0s;
+        transition-delay: 0s, 0s, 0s, 0s;
+        transition-timing-function: var(--ease-out);
+      }
+    }
+
+    .usage:focus-visible { outline-offset: 2px; }
+
+    .usage-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 12px 8px 10px 14px;
+    }
+
+    .usage-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      padding-top: 3px;
+    }
+
+    .usage-title {
+      margin: 0;
+      font-size: var(--text-body);
+      line-height: 1.3;
+      font-weight: 600;
+    }
+
+    .usage-sub {
+      font-size: var(--text-label);
+      line-height: 1.3;
+      color: var(--color-text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .usage-tools {
+      display: flex;
+      gap: 2px;
+      flex: none;
+    }
+
+    .usage-body {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 2px 14px 14px;
+    }
+
+    .usage-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .usage-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+      column-gap: 10px;
+      row-gap: 6px;
+    }
+
+    .usage-name {
+      font-size: var(--text-label);
+      line-height: 1.3;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .usage-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: var(--text-label);
+      line-height: 1.3;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .usage-reset { color: var(--color-text-muted); }
+
+    .usage-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: var(--text-caption);
+      line-height: 1.25;
+      font-weight: 600;
+      background: var(--color-bg-inset);
+    }
+
+    .usage-status[data-tone="warn"] { color: var(--color-status-warn-text); }
+    .usage-status[data-tone="low"] { color: var(--color-status-low-text); }
+
+    .usage-pct {
+      min-width: 4ch;
+      text-align: end;
+      font-weight: 600;
+    }
+
+    .usage-pct[data-tone="ok"] { color: var(--color-text-primary); }
+    .usage-pct[data-tone="warn"] { color: var(--color-status-warn-text); }
+    .usage-pct[data-tone="low"] { color: var(--color-status-low-text); }
+    .usage-pct[data-tone="none"] { color: var(--color-text-muted); }
+
+    .meter {
+      grid-column: 1 / -1;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--color-track);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      background: var(--color-status-ok);
+      transform-origin: left center;
+      scale: var(--value, 0) 1;
+      transition-property: scale;
+      transition-duration: 0ms;
+    }
+
+    .meter-fill[data-tone="warn"] { background: var(--color-status-warn); }
+    .meter-fill[data-tone="low"] { background: var(--color-status-low); }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .meter-fill {
+        transition-duration: 700ms;
+        transition-timing-function: var(--ease-out);
+        transition-delay: var(--delay, 0ms);
+      }
+
+      .usage-row.is-entering {
+        animation: row-in 300ms ease-out both;
+        animation-delay: var(--delay, 0ms);
+      }
+
+      @keyframes row-in {
+        from { opacity: 0; translate: 0 4px; filter: blur(2px); }
+      }
+    }
+
+    .skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding-top: 2px;
+    }
+
+    .skeleton-row {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .skeleton-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--color-track);
+    }
+
+    .skeleton-bar.is-meter { height: 4px; width: 100%; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .skeleton { animation: pulse 1.2s ease-in-out infinite alternate; }
+
+      @keyframes pulse {
+        to { opacity: 0.55; }
+      }
+    }
+
+    .usage-message {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .usage-message p {
+      margin: 0;
+      font-size: var(--text-label);
+      line-height: 1.5;
+      color: var(--color-text-secondary);
+      text-wrap: pretty;
+    }
+
+    #bubble-refresh.is-spinning svg {
+      animation: spin 700ms linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #bubble-refresh.is-spinning svg { animation: none; opacity: 0.5; }
+    }
+
+    @keyframes spin {
+      to { rotate: 360deg; }
+    }
+
+    /* ------------------------------------------------------------------
+       Settings list
+       ------------------------------------------------------------------ */
+    .settings {
+      padding: 0 14px;
+    }
+
+    .setting {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px 16px;
+      padding: 12px 0;
+    }
+
+    .setting + .setting {
+      border-top: 1px solid var(--color-border-hairline);
+    }
+
+    .setting.is-stacked {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+    }
+
+    .setting-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .setting-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1 1 140px;
+    }
+
+    .setting-label {
+      font-size: var(--text-body);
+      line-height: 1.3;
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+
+    .setting-desc {
+      font-size: var(--text-label);
+      line-height: 1.4;
+      color: var(--color-text-muted);
+      text-wrap: pretty;
+    }
+
+    .setting-value {
+      font-size: var(--text-label);
+      line-height: 1.3;
+      color: var(--color-text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Segmented radio group with a sliding indicator.
+       10px outer = 7px inner + 3px padding. */
+    .segmented {
+      position: relative;
+      display: inline-flex;
+      padding: 3px;
+      gap: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-bg-inset);
+      isolation: isolate;
+    }
+
+    .segmented.is-scroll {
+      max-width: 100%;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+
+    .segmented.is-scroll::-webkit-scrollbar { display: none; }
+
+    .seg-indicator {
+      position: absolute;
+      z-index: -1;
+      top: 3px;
+      bottom: 3px;
+      left: 0;
+      width: var(--w, 0px);
+      translate: var(--x, 0px) 0;
+      border-radius: 7px;
+      background: var(--color-bg-surface);
+      box-shadow: var(--shadow-border);
+      pointer-events: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .seg-indicator { background: var(--color-bg-selected); }
+    }
+
+    .segmented.is-ready .seg-indicator {
+      transition-property: translate, width;
+      transition-duration: 240ms;
+      transition-timing-function: var(--ease-out);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .segmented.is-ready .seg-indicator { transition-duration: 0ms; }
+    }
+
+    .seg-option {
+      flex: none;
+      min-height: 26px;
+      padding: 3px 11px;
+      border-radius: 7px;
+      font-size: var(--text-label);
+      font-weight: 500;
+      line-height: 1.3;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      transition-property: color, scale;
+      transition-duration: 150ms;
+      transition-timing-function: ease-out;
+    }
+
+    @media (hover: hover) {
+      .seg-option:hover { color: var(--color-text-primary); }
+    }
+
+    .seg-option[aria-checked="true"] { color: var(--color-text-primary); }
+
+    .seg-option:focus-visible { outline-offset: 0; }
+
+    /* Range */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 20px;
+      margin: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to right,
+        var(--color-accent-solid) 0 var(--fill, 0%),
+        var(--color-track) var(--fill, 0%) 100%
+      );
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 4px;
+      border-radius: 999px;
+      background: var(--color-track);
+    }
+
+    input[type="range"]::-moz-range-progress {
+      height: 4px;
+      border-radius: 999px;
+      background: var(--color-accent-solid);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      margin-top: -6px;
+      border-radius: 50%;
+      background: var(--gray-0);
+      border: 1px solid transparent;
+      box-shadow: 0 0 0 1px oklch(0 0 0 / 0.14), 0 1px 3px oklch(0 0 0 / 0.2);
+      transition-property: scale;
+      transition-duration: 150ms;
+      transition-timing-function: ease-out;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--gray-0);
+      border: 1px solid transparent;
+      box-shadow: 0 0 0 1px oklch(0 0 0 / 0.14), 0 1px 3px oklch(0 0 0 / 0.2);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      input[type="range"]:active::-webkit-slider-thumb { scale: 1.15; }
+    }
+
+    input[type="range"]:focus-visible { outline-offset: 4px; border-radius: 4px; }
+
+    /* Switch */
+    .switch {
+      position: relative;
+      flex: none;
+      width: 34px;
+      height: 20px;
+      padding: 0;
+      border-radius: 999px;
+      background: var(--color-border-control);
+      transition-property: background-color, scale;
+      transition-duration: 150ms;
+      transition-timing-function: ease-out;
+    }
+
+    .switch[aria-checked="true"] { background: var(--color-accent-solid); }
+
+    .switch-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: var(--gray-0);
+      box-shadow: 0 1px 2px oklch(0 0 0 / 0.25);
+      transition-property: translate, width;
+      transition-duration: 220ms;
+      transition-timing-function: var(--ease-out);
+      pointer-events: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .switch[aria-checked="true"] .switch-thumb { background: var(--gray-d-900); }
+    }
+
+    .switch[aria-checked="true"] .switch-thumb { translate: 14px 0; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .switch:not(:disabled):active .switch-thumb { width: 19px; }
+      .switch[aria-checked="true"]:not(:disabled):active .switch-thumb { translate: 11px 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .switch-thumb { transition-duration: 0ms; }
+    }
+
+    .switch:disabled { opacity: 0.5; }
+
+    /* ------------------------------------------------------------------
+       Pet catalog
+       ------------------------------------------------------------------ */
+    .catalog {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .catalog-tools {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .search {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search .icon {
+      position: absolute;
+      inset-inline-start: 10px;
+      color: var(--color-text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      min-height: 34px;
+      padding-block: 6px;
+      padding-inline: 32px 34px;
+      border: 1px solid var(--color-border-control);
+      border-radius: var(--radius-sm);
+      background: var(--color-bg-surface);
+      font-size: 1rem;
+      line-height: 1.35;
+      color: var(--color-text-primary);
+      transition-property: border-color;
+      transition-duration: 150ms;
+      transition-timing-function: ease-out;
+    }
+
+    @media (min-width: 480px) {
+      .search-input { font-size: var(--text-body); }
+    }
+
+    .search-input::placeholder { color: var(--color-text-muted); opacity: 1; }
+
+    .search-input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+
+    .search-input:focus-visible {
+      outline-offset: 0;
+      border-color: var(--color-focus-ring);
+    }
+
+    .search-clear {
+      position: absolute;
+      inset-inline-end: 3px;
+      visibility: hidden;
+      opacity: 0;
+      transition-property: opacity, visibility, background-color, color;
+      transition-duration: 150ms, 0s, 150ms, 150ms;
+      transition-delay: 0s, 150ms, 0s, 0s;
+    }
+
+    .search-clear.visible {
+      visibility: visible;
+      opacity: 1;
+      transition-delay: 0s;
+    }
+
+    .pet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+      gap: 8px;
+      transition-property: opacity;
+      transition-duration: 150ms;
+      transition-timing-function: ease-out;
+    }
+
+    .pet-grid.is-loading { opacity: 0.5; }
+
+    /* 12px outer = 8px inner + 4px padding */
+    .pet {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+      padding: 4px 4px 6px;
+      border-radius: var(--radius-lg);
+      text-align: center;
+      min-width: 0;
+      color: var(--color-text-secondary);
+    }
+
+    @media (hover: hover) {
+      .pet:hover { background: var(--color-bg-hover); color: var(--color-text-primary); }
+    }
+
+    .pet[aria-pressed="true"] {
+      background: var(--color-bg-selected);
+      color: var(--color-text-primary);
+    }
+
+    .pet-art {
+      position: relative;
+      height: 64px;
+      border-radius: var(--radius-sm);
+      background: var(--color-bg-inset);
+      outline: 1px solid var(--color-image-outline);
+      outline-offset: -1px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .pet[aria-pressed="true"] .pet-art { background: var(--color-bg-surface); }
+
+    .pet-sprite {
+      width: 50px;
+      height: 54px;
+      background-repeat: no-repeat;
+      background-size: 800% auto;
+      background-position: 0% 0%;
+      image-rendering: pixelated;
+    }
+
+    /* Hovering a pet previews its idle cycle (row 0, 6 frames of 8 columns) */
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+      .pet:hover .pet-sprite {
+        animation: sprite-idle 900ms steps(6) infinite;
+      }
+
+      @keyframes sprite-idle {
+        to { background-position-x: 85.7143%; }
+      }
+    }
+
+    .pet-name {
+      font-size: var(--text-label);
+      line-height: 1.3;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-inline: 2px;
+    }
+
+    .pet[aria-pressed="true"] .pet-name { font-weight: 600; }
+
+    .pet-check {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: var(--color-accent-solid);
+      color: var(--color-text-on-accent);
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      scale: 0.25;
+      filter: blur(4px);
+      transition-property: opacity, scale, filter;
+      transition-duration: 300ms;
+      transition-timing-function: var(--ease-out);
+      pointer-events: none;
+    }
+
+    .pet-check svg { width: 10px; height: 10px; }
+
+    .pet[aria-pressed="true"] .pet-check {
+      opacity: 1;
+      scale: 1;
+      filter: blur(0px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pet-check, .pet[aria-pressed="true"] .pet-check { scale: 1; filter: none; }
+    }
+
+    .catalog-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--color-border-hairline);
+      font-size: var(--text-label);
+      line-height: 1.3;
+      color: var(--color-text-muted);
+    }
+
+    #picker-summary { font-variant-numeric: tabular-nums; }
+
+    .pager { display: flex; gap: 4px; }
+
+    .empty {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 28px 12px;
+      text-align: center;
+    }
+
+    .empty-title {
+      margin: 0;
+      font-size: var(--text-body);
+      line-height: 1.3;
+      font-weight: 500;
+    }
+
+    .empty-desc {
+      margin: 0 0 6px;
+      max-width: 36ch;
+      font-size: var(--text-label);
+      line-height: 1.5;
+      color: var(--color-text-muted);
+      text-wrap: pretty;
+    }
+
+    /* ------------------------------------------------------------------
+       Toast
+       ------------------------------------------------------------------ */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      z-index: 50;
+      max-width: calc(100% - 32px);
+      translate: -50% 0;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--color-accent-solid);
+      color: var(--color-text-on-accent);
+      font-size: var(--text-label);
+      line-height: 1.4;
+      font-weight: 500;
+      box-shadow: var(--shadow-raised);
+      visibility: hidden;
+      opacity: 0;
+      transition-property: opacity, visibility;
+      transition-duration: 150ms, 0s;
+      transition-delay: 0s, 150ms;
+      transition-timing-function: ease-out;
+    }
+
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+      transition-duration: 220ms, 0s;
+      transition-delay: 0s;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .toast {
+        translate: -50% 8px;
+        filter: blur(4px);
+        transition-property: opacity, translate, filter, visibility;
+        transition-duration: 150ms, 150ms, 150ms, 0s;
+        transition-delay: 0s, 0s, 0s, 150ms;
+      }
+
+      .toast.show {
+        translate: -50% 0;
+        filter: blur(0px);
+        transition-duration: 300ms, 300ms, 300ms, 0s;
+        transition-delay: 0s;
+        transition-timing-function: var(--ease-out);
+      }
+    }
+
+    /* First-paint entrance: three semantic groups, 100ms apart */
+    @media (prefers-reduced-motion: no-preference) {
+      .enter {
+        animation: enter 300ms ease-out both;
+      }
+
+      .enter { animation-delay: var(--enter-delay, 0ms); }
+
+      @keyframes enter {
+        from { opacity: 0; translate: 0 12px; filter: blur(4px); }
+      }
+    }
+
+    @media (forced-colors: active) {
+      .seg-indicator { outline: 1px solid CanvasText; }
+      .meter-fill { background: Highlight; }
+      .switch { border: 1px solid ButtonText; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header enter">
+      <div class="identity">
+        <div class="avatar" aria-hidden="true">
+          <div class="avatar-inner">
+            <div class="avatar-sprite" id="brand-thumb"></div>
+          </div>
+        </div>
+        <div class="identity-text">
+          <h1>Antigravity Pets</h1>
+          <span class="identity-sub" id="active-pet-pill">Boba</span>
+        </div>
+      </div>
+
+      <button id="usage-btn" class="btn btn-secondary has-icon pressable" type="button" aria-expanded="false" aria-controls="usage-bubble" data-open="false">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m12 14 4-4" />
+          <path d="M3.34 19a10 10 0 1 1 17.32 0" />
+        </svg>
+        <span>Usage</span>
+      </button>
+    </header>
+
+    <main class="main">
+      <section class="stage enter" style="--enter-delay: 100ms" id="stage-card" aria-label="Pet stage">
+        <canvas id="stage-canvas" tabindex="0" role="button" aria-label="Your pet. Activate to show usage limits." aria-controls="usage-bubble"></canvas>
+
+        <div class="stage-bar">
+          <div class="stage-actions">
+            <button type="button" class="chip pressable" id="wave-chip">Wave</button>
+            <button type="button" class="chip pressable" id="jump-chip">Jump</button>
+          </div>
+          <span class="stage-hint" id="stage-status">Click your pet to see usage</span>
+        </div>
+
+        <div class="usage" id="usage-bubble" role="dialog" aria-labelledby="usage-title" aria-describedby="bubble-sub" aria-hidden="true" tabindex="-1">
+          <div class="usage-head">
+            <div class="usage-titles">
+              <h2 class="usage-title" id="usage-title">Usage limits</h2>
+              <span class="usage-sub" id="bubble-sub">Checking…</span>
+            </div>
+            <div class="usage-tools">
+              <button class="icon-btn pressable" id="bubble-refresh" type="button" aria-label="Refresh usage limits">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
+                </svg>
+              </button>
+              <button class="icon-btn pressable" id="bubble-close" type="button" aria-label="Close usage limits">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="usage-body" id="bubble-body" aria-live="polite" aria-busy="false"></div>
+        </div>
+      </section>
+
+      <section class="section enter" style="--enter-delay: 200ms" aria-labelledby="settings-label">
+        <h2 class="section-label" id="settings-label">Behavior</h2>
+        <div class="card settings">
+          <div class="setting">
+            <div class="setting-text">
+              <span class="setting-label" id="behavior-label">Movement</span>
+            </div>
+            <div class="segmented" id="behavior-segmented" role="radiogroup" aria-labelledby="behavior-label">
+              <span class="seg-indicator" aria-hidden="true"></span>
+              <button type="button" class="seg-option pressable" role="radio" data-behavior="roam" aria-checked="true" tabindex="0">Roam</button>
+              <button type="button" class="seg-option pressable" role="radio" data-behavior="idle" aria-checked="false" tabindex="-1">Idle</button>
+              <button type="button" class="seg-option pressable" role="radio" data-behavior="follow" aria-checked="false" tabindex="-1">Follow cursor</button>
+            </div>
+            <select id="behavior-select" class="sr-only" aria-hidden="true" tabindex="-1">
+              <option value="roam">Roam</option>
+              <option value="idle">Idle</option>
+              <option value="follow">Follow cursor</option>
+            </select>
+          </div>
+
+          <div class="setting is-stacked">
+            <div class="setting-head">
+              <label class="setting-label" for="size-slider">Size</label>
+              <span class="setting-value" id="size-val" aria-hidden="true">96 px</span>
+            </div>
+            <input id="size-slider" type="range" min="48" max="192" step="4" value="96">
+          </div>
+
+          <div class="setting is-stacked">
+            <div class="setting-head">
+              <label class="setting-label" for="speed-slider">Speed</label>
+              <span class="setting-value" id="speed-val" aria-hidden="true">1.0×</span>
+            </div>
+            <input id="speed-slider" type="range" min="0.5" max="3.0" step="0.1" value="1.0">
+          </div>
+
+          <div class="setting">
+            <div class="setting-text">
+              <span class="setting-label" id="overlay-label">Desktop overlay</span>
+              <span class="setting-desc" id="overlay-desc">Keep your pet on top of other windows</span>
+            </div>
+            <button type="button" class="switch pressable" id="overlay-btn" role="switch" aria-checked="false" aria-labelledby="overlay-label" aria-describedby="overlay-desc">
+              <span class="switch-thumb"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section enter" style="--enter-delay: 300ms" aria-labelledby="catalog-label">
+        <h2 class="section-label" id="catalog-label">Pets</h2>
+        <div class="card catalog">
+          <div class="catalog-tools">
+            <div class="search">
+              <label class="sr-only" for="search-input">Search pets</label>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <input class="search-input" id="search-input" name="petSearch" type="search" autocomplete="off" spellcheck="false" placeholder="e.g. Boba">
+              <button type="button" class="icon-btn search-clear pressable" id="search-clear" aria-label="Clear search">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="segmented is-scroll" id="kind-pills" role="radiogroup" aria-label="Kind">
+              <span class="seg-indicator" aria-hidden="true"></span>
+              <button type="button" class="seg-option pressable" role="radio" data-kind="" aria-checked="true" tabindex="0">All</button>
+              <button type="button" class="seg-option pressable" role="radio" data-kind="creature" aria-checked="false" tabindex="-1">Creature</button>
+              <button type="button" class="seg-option pressable" role="radio" data-kind="character" aria-checked="false" tabindex="-1">Character</button>
+              <button type="button" class="seg-option pressable" role="radio" data-kind="object" aria-checked="false" tabindex="-1">Object</button>
+            </div>
+
+            <select id="kind-select" class="sr-only" aria-hidden="true" tabindex="-1">
+              <option value="">All kinds</option>
+              <option value="creature">creature</option>
+              <option value="character">character</option>
+              <option value="object">object</option>
+            </select>
+          </div>
+
+          <div class="pet-grid" id="pet-grid" aria-label="Pets">
+            <div class="empty"><p class="empty-desc">Loading pets…</p></div>
+          </div>
+
+          <div class="catalog-foot">
+            <span id="picker-summary" aria-live="polite">Loading…</span>
+            <div class="pager">
+              <button id="prev-btn" class="icon-btn pressable" type="button" aria-label="Previous page" disabled>
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+              </button>
+              <button id="next-btn" class="icon-btn pressable" type="button" aria-label="Next page" disabled>
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const themeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      const apiFetch = (url, opts) => {
+        if (window.sidecar && typeof window.sidecar.fetch === 'function') {
+          return window.sidecar.fetch(url, opts);
+        }
+        return window.fetch(url, opts);
+      };
+
+      const CELL_W = 192;
+      const CELL_H = 208;
+      const ANIMS = {
+        idle: { row: 0, frames: 6, fps: 6 },
+        'running-right': { row: 1, frames: 8, fps: 10 },
+        'running-left': { row: 2, frames: 8, fps: 10 },
+        waving: { row: 3, frames: 4, fps: 8 },
+        jumping: { row: 4, frames: 5, fps: 9 },
+        waiting: { row: 6, frames: 6, fps: 6 }
+      };
+
+      const numFmt = new Intl.NumberFormat();
+      const pluralRules = new Intl.PluralRules('en');
+
+      const state = {
+        config: {
+          slug: 'boba',
+          displayName: 'Boba',
+          spritesheet: 'curated/boba/sprite-v2.webp',
+          spriteVersionNumber: 2,
+          size: 96,
+          speed: 1.0,
+          behavior: 'roam'
+        },
+        overlayRunning: false,
+        pets: [],
+        total: 0,
+        filtered: 0,
+        offset: 0,
+        limit: 48,
+        q: '',
+        kind: '',
+        knownKinds: new Set(['creature', 'character', 'object']),
+        bubbleOpen: false,
+        usageLoading: false,
+        hasOpenedUsage: false
+      };
+
+      const petActor = {
+        x: 160,
+        dir: 1,
+        anim: 'idle',
+        frame: 0,
+        frameTimer: 0,
+        actionTimer: 2.0,
+        specialAnimLeft: 0,
+        mouseX: null,
+        spriteImg: null,
+        spritePath: ''
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const brandThumb = $('brand-thumb');
+      const stageCard = $('stage-card');
+      const canvas = $('stage-canvas');
+      const ctx = canvas.getContext('2d');
+      const activePetPill = $('active-pet-pill');
+      const stageStatus = $('stage-status');
+      const usageBtn = $('usage-btn');
+      const waveChip = $('wave-chip');
+      const jumpChip = $('jump-chip');
+      const overlayBtn = $('overlay-btn');
+      const usageBubble = $('usage-bubble');
+      const bubbleSub = $('bubble-sub');
+      const bubbleBody = $('bubble-body');
+      const bubbleClose = $('bubble-close');
+      const bubbleRefresh = $('bubble-refresh');
+      const sizeSlider = $('size-slider');
+      const sizeVal = $('size-val');
+      const speedSlider = $('speed-slider');
+      const speedVal = $('speed-val');
+      const behaviorSelect = $('behavior-select');
+      const behaviorSegmented = $('behavior-segmented');
+      const searchInput = $('search-input');
+      const searchClear = $('search-clear');
+      const kindSelect = $('kind-select');
+      const kindPills = $('kind-pills');
+      const petGrid = $('pet-grid');
+      const pickerSummary = $('picker-summary');
+      const prevBtn = $('prev-btn');
+      const nextBtn = $('next-btn');
+      const toastEl = $('toast');
+
+      /* ---------------- Theme ---------------- */
+      let floorShadow = '';
+      function readThemeColors() {
+        floorShadow =
+          getComputedStyle(document.documentElement).getPropertyValue('--color-stage-floor-shadow').trim() ||
+          'rgba(0, 0, 0, 0.15)';
+      }
+      readThemeColors();
+
+      // Swap themes without every color transition firing at once
+      themeMedia.addEventListener('change', () => {
+        const style = document.createElement('style');
+        style.append(document.createTextNode('*,*::before,*::after{transition:none !important}'));
+        document.head.append(style);
+        void document.body.offsetHeight;
+        readThemeColors();
+        requestAnimationFrame(() => requestAnimationFrame(() => style.remove()));
+      });
+
+      /* ---------------- Utilities ---------------- */
+      let toastTimer = null;
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
+      }
+
+      async function apiJson(url, opts) {
+        const res = await apiFetch(url, opts);
+        if (!res.ok) {
+          let errText = `HTTP ${res.status}`;
+          try {
+            const j = await res.json();
+            if (j && j.error) errText = j.error;
+          } catch {}
+          throw new Error(errText);
+        }
+        return res.json();
+      }
+
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function updateSliderFill(slider) {
+        const min = Number(slider.min) || 0;
+        const max = Number(slider.max) || 100;
+        const val = Number(slider.value);
+        const pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
+        slider.style.setProperty('--fill', `${Math.max(0, Math.min(100, pct))}%`);
+      }
+
+      /* ---------------- Segmented radio groups ---------------- */
+      function syncIndicator(group) {
+        const indicator = group.querySelector('.seg-indicator');
+        const active = group.querySelector('[role="radio"][aria-checked="true"]');
+        if (!indicator || !active) return;
+        group.style.setProperty('--x', `${active.offsetLeft}px`);
+        group.style.setProperty('--w', `${active.offsetWidth}px`);
+        if (!group.classList.contains('is-ready')) {
+          // Skip the slide on first render, enable it afterwards
+          requestAnimationFrame(() => requestAnimationFrame(() => group.classList.add('is-ready')));
+        }
+      }
+
+      function setRadio(group, matchFn) {
+        let activeEl = null;
+        for (const opt of group.querySelectorAll('[role="radio"]')) {
+          const on = matchFn(opt);
+          opt.setAttribute('aria-checked', String(on));
+          opt.tabIndex = on ? 0 : -1;
+          if (on) activeEl = opt;
+        }
+        syncIndicator(group);
+        if (activeEl && group.classList.contains('is-scroll')) {
+          activeEl.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+        }
+      }
+
+      function wireRadioKeys(group, onPick) {
+        group.addEventListener('keydown', (e) => {
+          const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+          if (!keys.includes(e.key)) return;
+          const opts = Array.from(group.querySelectorAll('[role="radio"]'));
+          const idx = opts.indexOf(document.activeElement);
+          if (idx < 0) return;
+          e.preventDefault();
+          let next = idx;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % opts.length;
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + opts.length) % opts.length;
+          if (e.key === 'Home') next = 0;
+          if (e.key === 'End') next = opts.length - 1;
+          opts[next].focus();
+          onPick(opts[next]);
+        });
+      }
+
+      if ('ResizeObserver' in window) {
+        const ro = new ResizeObserver(() => {
+          syncIndicator(behaviorSegmented);
+          syncIndicator(kindPills);
+        });
+        ro.observe(behaviorSegmented);
+        ro.observe(kindPills);
+      }
+
+      /* ---------------- Stage ---------------- */
+      let stageW = 400;
+      let stageH = 260;
+      function resizeCanvas() {
+        const rect = stageCard.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        stageW = Math.max(200, Math.floor(rect.width));
+        stageH = Math.max(200, Math.floor(rect.height));
+        canvas.width = Math.floor(stageW * dpr);
+        canvas.height = Math.floor(stageH * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = false;
+      }
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        if (state.bubbleOpen) positionBubble();
+      });
+      resizeCanvas();
+
+      function loadPetSprite(spritesheetPath) {
+        if (!spritesheetPath || petActor.spritePath === spritesheetPath) return;
+        const isSwap = petActor.spritePath !== '';
+        petActor.spritePath = spritesheetPath;
+        const spriteUrl = '/api/sprite?path=' + encodeURIComponent(spritesheetPath);
+        brandThumb.style.backgroundImage = `url('${spriteUrl}')`;
+        if (isSwap) {
+          brandThumb.classList.remove('is-swapping');
+          void brandThumb.offsetWidth;
+          brandThumb.classList.add('is-swapping');
+        }
+        const img = new Image();
+        img.onload = () => {
+          if (petActor.spritePath === spritesheetPath) petActor.spriteImg = img;
+        };
+        img.onerror = () => {
+          if (petActor.spritePath === spritesheetPath) {
+            stageStatus.textContent = 'This pet’s sprite didn’t load. Pick another pet.';
+            stageStatus.classList.remove('is-faded');
+          }
+        };
+        img.src = spriteUrl;
+      }
+
+      function getPetDims() {
+        const w = Number(state.config.size) || 96;
+        return { w, h: Math.round(w * (CELL_H / CELL_W)) };
+      }
+
+      function getPetGroundY() {
+        return Math.round(stageH * 0.80);
+      }
+
+      function setAnim(name) {
+        if (petActor.anim !== name) {
+          petActor.anim = name;
+          petActor.frame = 0;
+          petActor.frameTimer = 0;
+        }
+      }
+
+      function triggerSpecialAnim(name, duration = 1.4) {
+        if (reducedMotion.matches) return;
+        petActor.specialAnimLeft = duration;
+        setAnim(name);
+      }
+
+      function positionBubble() {
+        if (!state.bubbleOpen) return;
+        const { w, h } = getPetDims();
+        const bubbleW = usageBubble.offsetWidth || Math.min(312, stageW - 20);
+        const bubbleH = usageBubble.offsetHeight || 180;
+        const margin = 10;
+        const gap = 12;
+        let left;
+        let top;
+        let origin = 'bottom center';
+
+        if (stageW >= bubbleW + w + 48) {
+          const rightSpace = stageW - (petActor.x + w / 2 + gap) - margin;
+          const leftSpace = petActor.x - w / 2 - gap - margin;
+          if (rightSpace >= bubbleW) {
+            left = petActor.x + w / 2 + gap;
+            origin = 'left center';
+          } else if (leftSpace >= bubbleW) {
+            left = petActor.x - w / 2 - gap - bubbleW;
+            origin = 'right center';
+          } else {
+            left = petActor.x - bubbleW / 2;
+          }
+          left = Math.max(margin, Math.min(stageW - bubbleW - margin, left));
+          top = Math.max(margin, Math.min(stageH - bubbleH - margin, Math.round((stageH - bubbleH) / 2)));
+        } else {
+          left = Math.max(margin, Math.min(stageW - bubbleW - margin, petActor.x - bubbleW / 2));
+          top = Math.max(margin, getPetGroundY() - h - bubbleH - 8);
+        }
+
+        usageBubble.style.left = `${Math.round(left)}px`;
+        usageBubble.style.top = `${Math.round(top)}px`;
+        usageBubble.style.setProperty('--origin', origin);
+      }
+
+      let lastTs = performance.now();
+      function tick(now) {
+        const dt = Math.min(0.08, (now - lastTs) / 1000);
+        lastTs = now;
+
+        const { w, h } = getPetDims();
+        const speed = Number(state.config.speed) || 1.0;
+        const behavior = state.config.behavior || 'roam';
+        const minX = w / 2 + 12;
+        const maxX = Math.max(minX + 1, stageW - w / 2 - 12);
+        petActor.x = Math.max(minX, Math.min(maxX, petActor.x));
+
+        if (reducedMotion.matches) {
+          petActor.specialAnimLeft = 0;
+          setAnim('idle');
+          petActor.frame = 0;
+        } else {
+          if (petActor.specialAnimLeft > 0) {
+            petActor.specialAnimLeft -= dt;
+            if (petActor.specialAnimLeft <= 0) {
+              setAnim('idle');
+              petActor.actionTimer = 1.5;
+            }
+          } else if (state.bubbleOpen) {
+            // Stay put while the usage window is open
+            if (petActor.anim === 'running-right' || petActor.anim === 'running-left') setAnim('idle');
+          } else if (behavior === 'idle') {
+            petActor.actionTimer -= dt;
+            if (petActor.actionTimer <= 0) {
+              const roll = Math.random();
+              if (roll < 0.25) {
+                setAnim('waving');
+                petActor.actionTimer = 1.2;
+              } else if (roll < 0.45) {
+                setAnim('waiting');
+                petActor.actionTimer = 2.0;
+              } else {
+                setAnim('idle');
+                petActor.actionTimer = 2.5 + Math.random() * 2;
+              }
+            }
+          } else if (behavior === 'follow') {
+            if (petActor.mouseX !== null) {
+              const dx = petActor.mouseX - petActor.x;
+              if (Math.abs(dx) > 10) {
+                const dir = dx > 0 ? 1 : -1;
+                petActor.dir = dir;
+                petActor.x += dir * 85 * speed * dt;
+                setAnim(dir > 0 ? 'running-right' : 'running-left');
+              } else {
+                setAnim('idle');
+              }
+            } else {
+              setAnim('idle');
+            }
+          } else {
+            petActor.actionTimer -= dt;
+            if (petActor.anim === 'running-right' || petActor.anim === 'running-left') {
+              petActor.x += petActor.dir * 68 * speed * dt;
+              if (petActor.x <= minX) {
+                petActor.x = minX;
+                petActor.dir = 1;
+                setAnim('running-right');
+              } else if (petActor.x >= maxX) {
+                petActor.x = maxX;
+                petActor.dir = -1;
+                setAnim('running-left');
+              }
+              if (petActor.actionTimer <= 0) {
+                const roll = Math.random();
+                if (roll < 0.22) {
+                  setAnim('waving');
+                  petActor.actionTimer = 1.1;
+                } else if (roll < 0.38) {
+                  setAnim('jumping');
+                  petActor.actionTimer = 1.0;
+                } else {
+                  setAnim('idle');
+                  petActor.actionTimer = 1.4 + Math.random() * 1.8;
+                }
+              }
+            } else if (petActor.actionTimer <= 0) {
+              if (Math.random() < 0.25) petActor.dir *= -1;
+              setAnim(petActor.dir > 0 ? 'running-right' : 'running-left');
+              petActor.actionTimer = 2.0 + Math.random() * 3.0;
+            }
+          }
+
+          const s = ANIMS[petActor.anim] || ANIMS.idle;
+          const fps = s.fps * (petActor.anim.startsWith('running') ? Math.max(0.75, speed) : 1);
+          petActor.frameTimer += dt;
+          if (petActor.frameTimer >= 1 / fps) {
+            petActor.frameTimer -= 1 / fps;
+            petActor.frame = (petActor.frame + 1) % s.frames;
+          }
+        }
+
+        const spec = ANIMS[petActor.anim] || ANIMS.idle;
+        ctx.clearRect(0, 0, stageW, stageH);
+        ctx.imageSmoothingEnabled = false;
+        const groundY = getPetGroundY();
+
+        ctx.fillStyle = floorShadow;
+        ctx.beginPath();
+        ctx.ellipse(petActor.x, groundY - 3, w * 0.26, Math.max(3, h * 0.04), 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (petActor.spriteImg && petActor.spriteImg.complete && petActor.spriteImg.naturalWidth > 0) {
+          ctx.drawImage(
+            petActor.spriteImg,
+            petActor.frame * CELL_W,
+            spec.row * CELL_H,
+            CELL_W,
+            CELL_H,
+            Math.round(petActor.x - w / 2),
+            Math.round(groundY - h),
+            w,
+            h
+          );
+        }
+
+        if (state.bubbleOpen) positionBubble();
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        petActor.mouseX = e.clientX - rect.left;
+        const { w, h } = getPetDims();
+        const cy = e.clientY - rect.top;
+        const gy = getPetGroundY();
+        const over =
+          petActor.mouseX >= petActor.x - w / 2 - 14 &&
+          petActor.mouseX <= petActor.x + w / 2 + 14 &&
+          cy >= gy - h - 14 &&
+          cy <= gy + 14;
+        canvas.style.cursor = over ? 'pointer' : 'default';
+      });
+      canvas.addEventListener('mouseleave', () => {
+        petActor.mouseX = null;
+      });
+
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const cx = e.clientX - rect.left;
+        const cy = e.clientY - rect.top;
+        const { w, h } = getPetDims();
+        const groundY = getPetGroundY();
+        const pad = 14;
+        const inPet =
+          cx >= petActor.x - w / 2 - pad &&
+          cx <= petActor.x + w / 2 + pad &&
+          cy >= groundY - h - pad &&
+          cy <= groundY + pad;
+        if (!inPet) {
+          if (state.bubbleOpen) closeBubble(false);
+          return;
+        }
+        toggleUsage(canvas, false);
+      });
+
+      canvas.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleUsage(canvas, true);
+        }
+      });
+
+      waveChip.addEventListener('click', () => triggerSpecialAnim('waving', 1.4));
+      jumpChip.addEventListener('click', () => triggerSpecialAnim('jumping', 1.2));
+
+      /* ---------------- Usage grouping ---------------- */
+      function stripThinkingLevel(label) {
+        return String(label ?? '')
+          .replace(
+            /\s*(?:\((?:x-?high|extra\s*high|ultra\s*high|high|medium|med|low|minimal|min|max|none|thinking|non-thinking|extended\s*thinking|standard)(?:\s+thinking)?\)|[-–—]\s*(?:x-?high|extra\s*high|high|medium|med|low|minimal|thinking))\s*$/i,
+            ''
+          )
+          .trim();
+      }
+
+      function stripModelIdThinkingSuffix(modelId) {
+        return String(modelId ?? '')
+          .replace(
+            /-(?:x-?high|extra-?high|ultra-?high|high|medium|med|low|minimal|min|max|none|thinking|non-thinking)$/i,
+            ''
+          )
+          .trim();
+      }
+
+      function groupUsageModels(rawModels) {
+        const normalized = (Array.isArray(rawModels) ? rawModels : []).map((c) => {
+          const rawLabel = c?.label ?? c?.modelId ?? c?.modelOrAlias?.model ?? 'Unknown';
+          const rawModelId = c?.modelId ?? c?.modelOrAlias?.model ?? '';
+          const frac =
+            typeof c?.quotaInfo?.remainingFraction === 'number'
+              ? c.quotaInfo.remainingFraction
+              : typeof c?.remainingFraction === 'number'
+                ? c.remainingFraction
+                : null;
+          const resetTime = c?.quotaInfo?.resetTime ?? c?.resetTime ?? null;
+          return {
+            label: rawLabel,
+            modelId: rawModelId,
+            remainingFraction: frac,
+            resetTime,
+            disabled: Boolean(c?.disabled),
+            variants: typeof c?.variants === 'number' ? c.variants : 1
+          };
+        });
+
+        const hasNumericQuota = normalized.some((m) => typeof m.remainingFraction === 'number');
+        const active = normalized.filter((m) => {
+          if (m.disabled && m.remainingFraction === null) return false;
+          if (hasNumericQuota && m.remainingFraction === null) return false;
+          return true;
+        });
+
+        const groups = new Map();
+        for (const item of active) {
+          const baseLabel = stripThinkingLevel(item.label) || item.label || 'Unknown';
+          const baseModelId = stripModelIdThinkingSuffix(item.modelId);
+          const key = baseLabel.toLowerCase() || baseModelId.toLowerCase() || 'unknown';
+          const existing = groups.get(key);
+          if (!existing) {
+            groups.set(key, {
+              label: baseLabel,
+              modelId: baseModelId,
+              remainingFraction: item.remainingFraction,
+              resetTime: item.resetTime || null,
+              variants: item.variants
+            });
+          } else {
+            if (typeof item.remainingFraction === 'number') {
+              existing.remainingFraction =
+                typeof existing.remainingFraction === 'number'
+                  ? Math.min(existing.remainingFraction, item.remainingFraction)
+                  : item.remainingFraction;
+            }
+            if (!existing.resetTime && item.resetTime) {
+              existing.resetTime = item.resetTime;
+            }
+            existing.variants += item.variants;
+          }
+        }
+        return Array.from(groups.values());
+      }
+
+      /* ---------------- Usage window ---------------- */
+      function formatRelative(ms) {
+        const diff = ms - Date.now();
+        if (diff <= 60000) return 'soon';
+        const totalMin = Math.floor(diff / 60000);
+        const h = Math.floor(totalMin / 60);
+        const m = totalMin % 60;
+        if (h >= 24) {
+          const d = Math.floor(h / 24);
+          return `in ${d}d ${h % 24}h`;
+        }
+        return h > 0 ? `in ${h}h ${m}m` : `in ${m}m`;
+      }
+
+      function toneFor(pct) {
+        if (pct === null) return 'none';
+        if (pct <= 20) return 'low';
+        if (pct <= 50) return 'warn';
+        return 'ok';
+      }
+
+      function renderUsageSkeleton() {
+        const widths = [58, 44, 70, 52];
+        bubbleBody.innerHTML = `
+          <div class="skeleton" aria-hidden="true">
+            ${widths
+              .map(
+                (wd) => `
+              <div class="skeleton-row">
+                <div class="skeleton-bar" style="width:${wd}%"></div>
+                <div class="skeleton-bar is-meter"></div>
+              </div>`
+              )
+              .join('')}
+          </div>`;
+      }
+
+      function renderUsageMessage(text, actionLabel) {
+        bubbleBody.innerHTML = `
+          <div class="usage-message">
+            <p>${escapeHtml(text)}</p>
+            ${actionLabel ? `<button type="button" class="btn btn-secondary pressable" data-action="retry">${escapeHtml(actionLabel)}</button>` : ''}
+          </div>`;
+        const retry = bubbleBody.querySelector('[data-action="retry"]');
+        if (retry) retry.addEventListener('click', () => loadUsageIntoBubble());
+      }
+
+      function countUp(el, target, delay) {
+        if (reducedMotion.matches || target === 0) {
+          el.textContent = `${target}%`;
+          return;
+        }
+        const duration = 600;
+        const start = performance.now() + delay;
+        el.textContent = '0%';
+        const step = (now) => {
+          const t = Math.min(1, Math.max(0, (now - start) / duration));
+          const eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = `${Math.round(target * eased)}%`;
+          if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+
+      function renderUsage(models) {
+        // Lowest remaining first: the number people come for sits on top
+        const withPct = models.map((m) => {
+          const frac = typeof m.remainingFraction === 'number' ? Math.max(0, Math.min(1, m.remainingFraction)) : null;
+          const resetMs = m.resetTime ? Date.parse(m.resetTime) : NaN;
+          return { ...m, frac, pct: frac === null ? null : Math.round(frac * 100), resetMs };
+        });
+        withPct.sort((a, b) => (a.frac ?? 2) - (b.frac ?? 2));
+
+        const resets = withPct.map((m) => m.resetMs).filter((n) => Number.isFinite(n));
+        const soonest = resets.length ? Math.min(...resets) : null;
+        const sharedReset =
+          soonest !== null && resets.length === withPct.length && resets.every((r) => Math.abs(r - soonest) < 120000);
+
+        const countText = pluralRules.select(withPct.length) === 'one'
+          ? `${numFmt.format(withPct.length)} model`
+          : `${numFmt.format(withPct.length)} models`;
+        bubbleSub.textContent = soonest !== null
+          ? `${countText} · ${sharedReset ? 'Resets' : 'Next reset'} ${formatRelative(soonest)}`
+          : countText;
+
+        bubbleBody.innerHTML = `<ul class="usage-list">${withPct
+          .map((m, i) => {
+            const name = m.label || m.modelId || 'Model';
+            const tone = toneFor(m.pct);
+            const ownReset = !sharedReset && Number.isFinite(m.resetMs) ? formatRelative(m.resetMs) : '';
+            const statusLabel = tone === 'low' ? 'Low' : tone === 'warn' ? 'Warn' : '';
+            const valueText = m.pct === null ? 'No quota data' : `${m.pct}% remaining${statusLabel ? ` (${statusLabel})` : ''}`;
+            return `
+              <li class="usage-row is-entering" style="--delay:${i * 40}ms">
+                <span class="usage-name" title="${escapeHtml(name)}">${escapeHtml(name)}</span>
+                <span class="usage-meta">
+                  ${ownReset ? `<span class="usage-reset">${escapeHtml(ownReset)}</span>` : ''}
+                  ${statusLabel ? `<span class="usage-status" data-tone="${tone}">${statusLabel}</span>` : ''}
+                  <span class="usage-pct" data-tone="${tone}" data-target="${m.pct ?? ''}">${m.pct === null ? '—' : `${m.pct}%`}</span>
+                </span>
+                <div class="meter" role="meter" aria-label="${escapeHtml(name)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${m.pct ?? 0}" aria-valuetext="${escapeHtml(valueText)}">
+                  <div class="meter-fill" data-tone="${tone}" data-value="${m.frac ?? 0}" style="--delay:${120 + i * 40}ms"></div>
+                </div>
+              </li>`;
+          })
+          .join('')}</ul>`;
+
+        // Fill meters and count numbers after the rows land
+        const fills = bubbleBody.querySelectorAll('.meter-fill');
+        const pcts = bubbleBody.querySelectorAll('.usage-pct');
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            fills.forEach((f) => f.style.setProperty('--value', f.dataset.value));
+          });
+        });
+        pcts.forEach((el, i) => {
+          if (el.dataset.target !== '') countUp(el, Number(el.dataset.target), 120 + i * 40);
+        });
+      }
+
+      async function loadUsageIntoBubble() {
+        if (state.usageLoading) return;
+        state.usageLoading = true;
+        bubbleRefresh.classList.add('is-spinning');
+        bubbleRefresh.disabled = true;
+        bubbleBody.setAttribute('aria-busy', 'true');
+        bubbleSub.textContent = 'Checking…';
+        if (!bubbleBody.querySelector('.usage-list')) renderUsageSkeleton();
+        const started = performance.now();
+
+        try {
+          const data = await apiJson('/api/usage');
+          const models = groupUsageModels(data.models);
+          // Keep the spinner up for one full turn so a fast refresh still reads as a refresh
+          const wait = Math.max(0, 450 - (performance.now() - started));
+          if (wait) await new Promise((r) => setTimeout(r, wait));
+          if (models.length === 0) {
+            bubbleSub.textContent = 'No active quotas';
+            renderUsageMessage('No model has quota data right now. Refresh in a minute to check again.', 'Refresh');
+          } else {
+            renderUsage(models);
+          }
+        } catch (err) {
+          bubbleSub.textContent = 'Unavailable';
+          const detail = err && err.message ? ` (${err.message})` : '';
+          renderUsageMessage(`Unable to load usage limits${detail}. Check that Antigravity is running, then try again.`, 'Try again');
+        } finally {
+          state.usageLoading = false;
+          bubbleRefresh.classList.remove('is-spinning');
+          bubbleRefresh.disabled = false;
+          bubbleBody.setAttribute('aria-busy', 'false');
+          positionBubble();
+        }
+      }
+
+      let lastUsageTrigger = null;
+
+      function openUsageBubble(triggerEl, moveFocus) {
+        lastUsageTrigger = triggerEl || usageBtn;
+        state.bubbleOpen = true;
+        usageBtn.setAttribute('aria-expanded', 'true');
+        usageBtn.dataset.open = 'true';
+        usageBubble.setAttribute('aria-hidden', 'false');
+        positionBubble();
+        usageBubble.classList.add('is-open');
+        if (!state.hasOpenedUsage) {
+          state.hasOpenedUsage = true;
+          stageStatus.classList.add('is-faded');
+        }
+        if (moveFocus) usageBubble.focus({ preventScroll: true });
+        loadUsageIntoBubble();
+      }
+
+      function closeBubble(restoreFocus) {
+        if (!state.bubbleOpen) return;
+        state.bubbleOpen = false;
+        usageBtn.setAttribute('aria-expanded', 'false');
+        usageBtn.dataset.open = 'false';
+        usageBubble.classList.remove('is-open');
+        usageBubble.setAttribute('aria-hidden', 'true');
+        if (restoreFocus && lastUsageTrigger) lastUsageTrigger.focus({ preventScroll: true });
+      }
+
+      function toggleUsage(triggerEl, viaKeyboard) {
+        if (state.bubbleOpen) {
+          closeBubble(viaKeyboard);
+        } else {
+          triggerSpecialAnim(Math.random() < 0.5 ? 'waving' : 'jumping', 1.5);
+          openUsageBubble(triggerEl, viaKeyboard);
+        }
+      }
+
+      usageBtn.addEventListener('click', (e) => toggleUsage(usageBtn, e.detail === 0));
+      bubbleClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeBubble(true);
+      });
+      bubbleRefresh.addEventListener('click', (e) => {
+        e.stopPropagation();
+        loadUsageIntoBubble();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && state.bubbleOpen) closeBubble(true);
+      });
+
+      /* ---------------- Config ---------------- */
+      function applyConfigToUI(cfg) {
+        state.config = { ...state.config, ...cfg };
+        activePetPill.textContent = state.config.displayName || state.config.slug || 'Pet';
+        sizeSlider.value = String(state.config.size ?? 96);
+        sizeVal.textContent = `${sizeSlider.value} px`;
+        updateSliderFill(sizeSlider);
+        speedSlider.value = String(state.config.speed ?? 1.0);
+        speedVal.textContent = `${Number(speedSlider.value).toFixed(1)}×`;
+        updateSliderFill(speedSlider);
+        sizeSlider.setAttribute('aria-valuetext', `${sizeSlider.value} pixels`);
+        speedSlider.setAttribute('aria-valuetext', `${Number(speedSlider.value).toFixed(1)} times speed`);
+        const behavior = state.config.behavior || 'roam';
+        behaviorSelect.value = behavior;
+        setRadio(behaviorSegmented, (opt) => opt.dataset.behavior === behavior);
+        loadPetSprite(state.config.spritesheet);
+        renderPetGridSelection();
+      }
+
+      let saveConfigTimer = null;
+      function scheduleSaveConfig(patch) {
+        applyConfigToUI(patch);
+        clearTimeout(saveConfigTimer);
+        saveConfigTimer = setTimeout(async () => {
+          try {
+            const saved = await apiJson('/api/config', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(state.config)
+            });
+            state.config = { ...state.config, ...saved };
+          } catch (err) {
+            showToast(`Settings not saved (${err.message}). Try again.`);
+          }
+        }, 180);
+      }
+
+      sizeSlider.addEventListener('input', () => scheduleSaveConfig({ size: Number(sizeSlider.value) }));
+      speedSlider.addEventListener('input', () => scheduleSaveConfig({ speed: Number(speedSlider.value) }));
+      behaviorSelect.addEventListener('change', () => scheduleSaveConfig({ behavior: behaviorSelect.value }));
+
+      function pickBehavior(opt) {
+        const val = opt.dataset.behavior;
+        if (val && val !== state.config.behavior) scheduleSaveConfig({ behavior: val });
+      }
+      behaviorSegmented.addEventListener('click', (e) => {
+        const opt = e.target.closest('[role="radio"]');
+        if (opt) pickBehavior(opt);
+      });
+      wireRadioKeys(behaviorSegmented, pickBehavior);
+
+      /* ---------------- Overlay switch ---------------- */
+      function updateOverlayBtn(running) {
+        state.overlayRunning = Boolean(running);
+        overlayBtn.setAttribute('aria-checked', String(state.overlayRunning));
+      }
+
+      async function refreshOverlayStatus() {
+        try {
+          const res = await apiJson('/api/overlay/status');
+          updateOverlayBtn(res.running);
+        } catch {
+          updateOverlayBtn(false);
+        }
+      }
+
+      overlayBtn.addEventListener('click', async () => {
+        const wanted = !state.overlayRunning;
+        updateOverlayBtn(wanted); // optimistic: the thumb moves on the press
+        overlayBtn.disabled = true;
+        try {
+          const endpoint = wanted ? '/api/overlay/start' : '/api/overlay/stop';
+          const res = await apiJson(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: '{}'
+          });
+          updateOverlayBtn(res.running);
+          showToast(res.running ? 'Desktop overlay on' : 'Desktop overlay off');
+        } catch (err) {
+          showToast(`Overlay didn’t ${wanted ? 'start' : 'stop'} (${err.message}). Try again.`);
+          await refreshOverlayStatus();
+        } finally {
+          overlayBtn.disabled = false;
+          overlayBtn.focus({ preventScroll: true });
+        }
+      });
+
+      /* ---------------- Catalog ---------------- */
+      function capitalize(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+
+      function renderKindOptions(kinds) {
+        let added = false;
+        for (const k of kinds) {
+          if (k && !state.knownKinds.has(k)) {
+            state.knownKinds.add(k);
+            added = true;
+          }
+        }
+        if (!added) return;
+        const sorted = Array.from(state.knownKinds).sort((a, b) => a.localeCompare(b));
+        kindSelect.innerHTML =
+          '<option value="">All kinds</option>' +
+          sorted.map((k) => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+        kindSelect.value = state.kind;
+
+        const opt = (val, label) => {
+          const on = state.kind === val;
+          return `<button type="button" class="seg-option pressable" role="radio" data-kind="${escapeHtml(val)}" aria-checked="${on}" tabindex="${on ? 0 : -1}">${escapeHtml(label)}</button>`;
+        };
+        kindPills.innerHTML =
+          '<span class="seg-indicator" aria-hidden="true"></span>' +
+          opt('', 'All') +
+          sorted.map((k) => opt(k, capitalize(k))).join('');
+        syncIndicator(kindPills);
+      }
+
+      function setKindFilter(val) {
+        state.kind = val || '';
+        state.offset = 0;
+        kindSelect.value = state.kind;
+        setRadio(kindPills, (o) => (o.dataset.kind || '') === state.kind);
+        fetchPets();
+      }
+
+      function clearAllFilters() {
+        searchInput.value = '';
+        updateSearchClear();
+        state.q = '';
+        state.kind = '';
+        state.offset = 0;
+        kindSelect.value = '';
+        setRadio(kindPills, (o) => (o.dataset.kind || '') === '');
+        fetchPets();
+        searchInput.focus();
+      }
+
+      function renderPetGridSelection() {
+        for (const card of petGrid.querySelectorAll('.pet')) {
+          card.setAttribute('aria-pressed', String(card.dataset.slug === state.config.slug));
+        }
+      }
+
+      function emptyCopy() {
+        const parts = [];
+        if (state.q) parts.push(`“${state.q}”`);
+        if (state.kind) parts.push(`the ${capitalize(state.kind)} kind`);
+        if (!parts.length) {
+          return { title: 'No pets yet', desc: 'The pet catalog is empty. Reload the panel to fetch it again.', action: '' };
+        }
+        return {
+          title: 'No matching pets',
+          desc: `Nothing matches ${parts.join(' in ')}. Try a different name.`,
+          action: 'Clear filters'
+        };
+      }
+
+      function renderPetGrid() {
+        if (!state.pets.length) {
+          const c = emptyCopy();
+          petGrid.innerHTML = `
+            <div class="empty">
+              <p class="empty-title">${escapeHtml(c.title)}</p>
+              <p class="empty-desc">${escapeHtml(c.desc)}</p>
+              ${c.action ? `<button type="button" class="btn btn-secondary pressable" data-action="clear">${escapeHtml(c.action)}</button>` : ''}
+            </div>`;
+          const clearBtn = petGrid.querySelector('[data-action="clear"]');
+          if (clearBtn) clearBtn.addEventListener('click', clearAllFilters);
+        } else {
+          petGrid.innerHTML = state.pets
+            .map((pet) => {
+              const selected = pet.slug === state.config.slug;
+              const spriteUrl = '/api/sprite?path=' + encodeURIComponent(pet.spritesheet);
+              const name = pet.displayName || pet.slug;
+              const kind = pet.kind ? capitalize(pet.kind) : 'Pet';
+              return `
+                <button type="button" class="pet pressable" data-slug="${escapeHtml(pet.slug)}" aria-pressed="${selected}" aria-label="${escapeHtml(name)}, ${escapeHtml(kind)}" title="${escapeHtml(name)} · ${escapeHtml(kind)}">
+                  <span class="pet-art" aria-hidden="true">
+                    <span class="pet-sprite" style="background-image:url('${escapeHtml(spriteUrl)}')"></span>
+                  </span>
+                  <span class="pet-name" aria-hidden="true">${escapeHtml(name)}</span>
+                  <span class="pet-check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                  </span>
+                </button>`;
+            })
+            .join('');
+        }
+
+        const start = state.filtered === 0 ? 0 : state.offset + 1;
+        const end = Math.min(state.offset + state.pets.length, state.filtered);
+        const noun = pluralRules.select(state.filtered) === 'one' ? 'pet' : 'pets';
+        pickerSummary.textContent = state.filtered === 0
+          ? 'No pets'
+          : `${numFmt.format(start)}–${numFmt.format(end)} of ${numFmt.format(state.filtered)} ${noun}`;
+        prevBtn.disabled = state.offset <= 0;
+        nextBtn.disabled = state.offset + state.limit >= state.filtered;
+      }
+
+      petGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.pet');
+        if (!card) return;
+        const pet = state.pets.find((p) => p.slug === card.dataset.slug);
+        if (!pet) return;
+        triggerSpecialAnim('jumping', 1.2);
+        scheduleSaveConfig({
+          slug: pet.slug,
+          displayName: pet.displayName || pet.slug,
+          spritesheet: pet.spritesheet,
+          spriteVersionNumber: pet.spriteVersionNumber || 2
+        });
+      });
+
+      let fetchSeq = 0;
+      async function fetchPets() {
+        const seq = ++fetchSeq;
+        const params = new URLSearchParams({ offset: String(state.offset), limit: String(state.limit) });
+        if (state.q) params.set('q', state.q);
+        if (state.kind) params.set('kind', state.kind);
+        petGrid.classList.add('is-loading');
+        petGrid.setAttribute('aria-busy', 'true');
+
+        try {
+          const data = await apiJson('/api/pets?' + params.toString());
+          if (seq !== fetchSeq) return;
+          state.pets = Array.isArray(data.pets) ? data.pets : [];
+          state.total = Number(data.total) || 0;
+          state.filtered = Number(data.filtered) || state.pets.length;
+          renderKindOptions(Array.isArray(data.kinds) ? data.kinds : state.pets.map((p) => p.kind));
+          renderPetGrid();
+        } catch (err) {
+          if (seq !== fetchSeq) return;
+          petGrid.innerHTML = `
+            <div class="empty">
+              <p class="empty-title">Couldn’t load pets</p>
+              <p class="empty-desc">${escapeHtml(err.message || 'The catalog request failed')}. Check your connection and try again.</p>
+              <button type="button" class="btn btn-secondary pressable" data-action="retry">Try again</button>
+            </div>`;
+          const retry = petGrid.querySelector('[data-action="retry"]');
+          if (retry) retry.addEventListener('click', fetchPets);
+          pickerSummary.textContent = 'Catalog unavailable';
+        } finally {
+          if (seq === fetchSeq) {
+            petGrid.classList.remove('is-loading');
+            petGrid.setAttribute('aria-busy', 'false');
+          }
+        }
+      }
+
+      let searchTimer = null;
+      function updateSearchClear() {
+        searchClear.classList.toggle('visible', searchInput.value.length > 0);
+      }
+
+      searchInput.addEventListener('input', () => {
+        updateSearchClear();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+          state.q = searchInput.value.trim();
+          state.offset = 0;
+          fetchPets();
+        }, 200);
+      });
+
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && searchInput.value) {
+          e.stopPropagation();
+          searchClear.click();
+        }
+      });
+
+      searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        updateSearchClear();
+        state.q = '';
+        state.offset = 0;
+        fetchPets();
+        searchInput.focus();
+      });
+
+      kindSelect.addEventListener('change', () => setKindFilter(kindSelect.value));
+      function pickKind(opt) {
+        const val = opt.dataset.kind || '';
+        if (val !== state.kind) setKindFilter(val);
+      }
+      kindPills.addEventListener('click', (e) => {
+        const opt = e.target.closest('[role="radio"]');
+        if (opt) pickKind(opt);
+      });
+      wireRadioKeys(kindPills, pickKind);
+
+      prevBtn.addEventListener('click', () => {
+        state.offset = Math.max(0, state.offset - state.limit);
+        fetchPets();
+      });
+      nextBtn.addEventListener('click', () => {
+        if (state.offset + state.limit < state.filtered) {
+          state.offset += state.limit;
+          fetchPets();
+        }
+      });
+
+      /* ---------------- Init ---------------- */
+      async function init() {
+        try {
+          applyConfigToUI(await apiJson('/api/config'));
+        } catch {
+          applyConfigToUI(state.config);
+        }
+        syncIndicator(kindPills);
+        refreshOverlayStatus();
+        fetchPets();
+      }
+      init();
+    })();
+  </script>
+</body>
+</html>

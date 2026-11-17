@@ -1,0 +1,21 @@
+{
+  "command": "node",
+  "args": ["main.mjs"],
+  "restart_policy": "always",
+  "display_name": "Antigravity Pets",
+  "description": "Interactive pixel-art pet stage, petdex.dev browser, Windows desktop overlay controls, and live model quota.",
+  "has_web_ui": true,
+  "agent_permissions": {
+    "allows_user_interactions": false
+  },
+  "ui_config": {
+    "display_name": "Antigravity Pets",
+    "views": [
+      {
+        "path": "/",
+        "entrypoint": "SIDECAR_UI_ENTRYPOINT_AUX_PANE",
+        "title": "Antigravity Pets"
+      }
+    ]
+  }
+}
