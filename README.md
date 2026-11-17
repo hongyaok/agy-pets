@@ -1,6 +1,6 @@
 # Antigravity Pets (`agy-pets`)
 
-Pixel-art pets from [petdex.dev](https://petdex.dev) inside your Google Antigravity auxiliary pane, with a live model quota popover and an optional always-on-top Windows desktop overlay.
+Pixel-art pets from [petdex.dev](https://petdex.dev) inside your Google Antigravity auxiliary pane, with a live model quota popover and an optional always-on-top desktop overlay for Windows and macOS.
 
 ![Antigravity Pets](assets/preview.jpg)
 
@@ -14,7 +14,7 @@ Pixel-art pets from [petdex.dev](https://petdex.dev) inside your Google Antigrav
 - **Frosted glass cards**: Translucent surfaces blur an ambient backdrop that samples its accent color from the active pet's sprite. Adapts to system light and dark themes and `prefers-reduced-motion`.
 - **Live model quota**: Click your pet (or **Usage**) to query the local Antigravity Language Server (`GetUserStatus`) for remaining quota per model and reset countdowns.
 - **5,200+ petdex.dev sprites**: Search by name or creator, filter by kind (`Creature`, `Character`, `Object`), and cache manifests and WebP spritesheets locally under `sidecars/pets/cache/`.
-- **Windows desktop overlay**: Toggle **Desktop overlay** to spawn a transparent, always-on-top WPF window (`overlay/AgyPetsOverlay.csproj`). Drag to move the pet across your screen, left-click for quota, or right-click for the tray menu.
+- **Desktop overlay (Windows & macOS)**: Toggle **Desktop overlay** to spawn a transparent, always-on-top window (`overlay/AgyPetsOverlay.csproj` on Windows; built-in Cocoa/WebKit host `sidecars/pets/overlay-mac.jxa.js` on macOS). Drag to move the pet across your screen, left-click for quota, or right-click for the menu.
 
 ---
 
@@ -71,9 +71,10 @@ mkdir -p .agents/plugins
 git clone https://github.com/hongyaok/agy-pets.git .agents/plugins/agy-pets
 ```
 
-### Windows Desktop Overlay Setup (Optional, Windows 10/11)
+### Desktop Overlay Setup (Windows & macOS)
 
-The sidecar panel works on macOS, Linux, and Windows out of the box. To use the floating desktop pet on Windows, install the [.NET 10 Desktop SDK](https://dotnet.microsoft.com/download/dotnet/10.0) and build the WPF executable once:
+- **macOS**: Works out of the box with zero extra dependencies using macOS's built-in Cocoa/WebKit host (`/usr/bin/osascript -l JavaScript` + `sidecars/pets/overlay-mac.jxa.js`).
+- **Windows (10/11)**: Install the [.NET 10 Desktop SDK](https://dotnet.microsoft.com/download/dotnet/10.0) and build the WPF executable once:
 
 ```powershell
 cd "$env:USERPROFILE\.gemini\config\plugins\agy-pets\overlay"
@@ -106,7 +107,10 @@ Once installed, open the sidecar in any of three ways:
 │   └── pets/
 │       ├── sidecar.json        # Sidecar process + AUX_PANE UI registration
 │       ├── main.mjs            # Node.js backend (manifest/sprite cache, config, LS quota, overlay)
-│       └── index.html          # Self-contained sidecar UI
+│       ├── index.html          # Self-contained sidecar UI
+│       ├── overlay.html        # Transparent overlay web UI (macOS)
+│       ├── overlay-mac.jxa.js  # Zero-dependency macOS Cocoa/WebKit overlay host
+│       └── fonts/              # Bundled pixel fonts (Pixelify Sans, Silkscreen)
 └── overlay/
     ├── AgyPetsOverlay.csproj   # Windows WPF desktop overlay (.NET 10)
     ├── App.xaml(.cs)

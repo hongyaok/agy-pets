@@ -1,7 +1,7 @@
 {
   "name": "agy-pets",
   "displayName": "Antigravity Pets",
-  "description": "Interactive pixel-art pets from petdex.dev in your Antigravity sidecar and Windows desktop overlay, with live model usage checks.",
+  "description": "Interactive pixel-art pets from petdex.dev in your Antigravity sidecar and desktop overlay (Windows & macOS), with live model usage checks.",
   "suggestedPrompts": [
     "Open Antigravity Pets",
     "Browse pets and change my active desktop pet",

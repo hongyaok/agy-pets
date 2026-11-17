@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{"ready":false}</title>
+  <style>
+    @font-face {
+      font-family: 'Pixelify Sans';
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+      src: url('/api/font?name=pixelify-sans-cyrillic.woff2') format('woff2');
+      unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+    }
+    @font-face {
+      font-family: 'Pixelify Sans';
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+      src: url('/api/font?name=pixelify-sans-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'Pixelify Sans';
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+      src: url('/api/font?name=pixelify-sans-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Silkscreen';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/api/font?name=silkscreen-400-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'Silkscreen';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/api/font?name=silkscreen-400-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Silkscreen';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('/api/font?name=silkscreen-700-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'Silkscreen';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('/api/font?name=silkscreen-700-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent !important;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: "Pixelify Sans", "Silkscreen", monospace;
+      color: #f5f5f7;
+    }
+
+    #overlay-root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Usage speech bubble anchored above pet */
+    .bubble-wrap {
+      position: absolute;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    .bubble-wrap.is-open {
+      display: flex;
+    }
+
+    .bubble-card {
+      width: 296px;
+      background: rgba(20, 20, 24, 0.98);
+      border: 2px solid #3a3a46;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+        4px 4px 0 rgba(0, 0, 0, 0.85);
+      padding: 12px 13px 13px;
+    }
+
+    .bubble-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .bubble-title {
+      font-family: "Silkscreen", "Pixelify Sans", monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #f5f5f7;
+      line-height: 1.25;
+      letter-spacing: 0.03em;
+    }
+
+    .bubble-sub {
+      margin-top: 3px;
+      font-size: 11px;
+      color: #a1a1aa;
+      line-height: 1.25;
+    }
+
+    .bubble-close {
+      flex: none;
+      padding: 2px 6px;
+      background: #22222a;
+      border: 1px solid #4a4a58;
+      font-family: "Silkscreen", monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: #d4d4d8;
+      line-height: 1.2;
+    }
+
+    .bubble-status {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #d4d4d8;
+      line-height: 1.35;
+      display: none;
+    }
+
+    .bubble-status.is-visible {
+      display: block;
+    }
+
+    .models-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .model-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .model-meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .model-name {
+      color: #f5f5f7;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .model-right {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex: none;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .model-reset {
+      font-size: 10px;
+      color: #a1a1aa;
+    }
+
+    .model-pct {
+      font-family: "Silkscreen", monospace;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 7px;
+      width: 100%;
+      background: #1e1e24;
+      border: 1px solid #383844;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+    }
+
+    .bar-track::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to right,
+        transparent 0 6px,
+        rgba(20, 20, 24, 0.6) 6px 8px
+      );
+    }
+
+    .bubble-tail {
+      width: 15px;
+      height: 9px;
+      margin-top: -1px;
+      pointer-events: none;
+    }
+
+    /* Pixelated right-click menu */
+    .ctx-menu {
+      position: absolute;
+      display: none;
+      flex-direction: column;
+      width: 164px;
+      background: rgba(20, 20, 24, 0.98);
+      border: 2px solid #3a3a46;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+        4px 4px 0 rgba(0, 0, 0, 0.85);
+      padding: 4px;
+      z-index: 30;
+    }
+
+    .ctx-menu.is-open {
+      display: flex;
+    }
+
+    .ctx-item {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: #f5f5f7;
+      font-family: "Pixelify Sans", "Silkscreen", monospace;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: left;
+      padding: 6px 8px;
+      cursor: pointer;
+    }
+
+    .ctx-item:hover {
+      background: #2b2b36;
+    }
+
+    .ctx-sep {
+      height: 1px;
+      background: #3a3a46;
+      margin: 3px 4px;
+    }
+
+    #pet-canvas {
+      position: absolute;
+      cursor: grab;
+      image-rendering: pixelated;
+      touch-action: none;
+    }
+
+    #pet-canvas.is-dragging {
+      cursor: grabbing;
+    }
+  </style>
+</head>
+<body>
+  <div id="overlay-root">
+    <div id="speech-bubble" class="bubble-wrap" role="dialog" aria-label="Usage limits">
+      <div class="bubble-card">
+        <div class="bubble-head">
+          <div>
+            <div class="bubble-title">USAGE LIMITS</div>
+            <div class="bubble-sub" id="bubble-sub">Checking…</div>
+          </div>
+          <div class="bubble-close" aria-hidden="true">X</div>
+        </div>
+        <div class="bubble-status" id="bubble-status"></div>
+        <div class="models-list" id="models-list"></div>
+      </div>
+      <svg class="bubble-tail" viewBox="0 0 15 9" aria-hidden="true">
+        <path fill="#3a3a46" d="M0 0h15v3h-3v3H9v3H6V6H3V3H0z" />
+      </svg>
+    </div>
+
+    <div id="ctx-menu" class="ctx-menu" role="menu">
+      <button type="button" class="ctx-item" id="menu-usage" role="menuitem">Usage limits</button>
+      <div class="ctx-sep"></div>
+      <button type="button" class="ctx-item" id="menu-close" role="menuitem">Close overlay</button>
+    </div>
+
+    <canvas id="pet-canvas"></canvas>
+  </div>
+
+  <script>
+    (() => {
+      const CELL_W = 192;
+      const CELL_H = 208;
+      const BASE_WALK_SPEED = 75;
+      const PAD_X = 12;
+      const PAD_BOTTOM = 10;
+
+      const PetState = {
+        Idle: 0,
+        WalkRight: 1,
+        WalkLeft: 2,
+        Waving: 3,
+        Jumping: 4,
+      };
+
+      const ROW_FRAMES = {
+        [PetState.Idle]: { row: 0, count: 6 },
+        [PetState.WalkRight]: { row: 1, count: 8 },
+        [PetState.WalkLeft]: { row: 2, count: 8 },
+        [PetState.Waving]: { row: 3, count: 4 },
+        [PetState.Jumping]: { row: 4, count: 5 },
+      };
+
+      const petCanvas = document.getElementById('pet-canvas');
+      const ctx = petCanvas.getContext('2d');
+      const speechBubble = document.getElementById('speech-bubble');
+      const bubbleSub = document.getElementById('bubble-sub');
+      const bubbleStatus = document.getElementById('bubble-status');
+      const modelsList = document.getElementById('models-list');
+      const ctxMenu = document.getElementById('ctx-menu');
+      const menuUsage = document.getElementById('menu-usage');
+      const menuClose = document.getElementById('menu-close');
+
+      const host = {
+        screenLeft: 0,
+        screenTop: 28,
+        screenW: 1440,
+        screenH: 820,
+        cursorX: null,
+        cursorY: null,
+        mouseButtons: 0,
+        hasBounds: false,
+      };
+
+      let petDisplayName = 'Pet';
+      let petSize = 96;
+      let speed = 1.0;
+      let behavior = 'roam';
+      let loadedSpritesheet = '';
+      let spriteImg = null;
+
+      let state = PetState.Idle;
+      let frameIndex = 0;
+      let frameElapsed = 0;
+      let stateRemaining = 2.0;
+
+      let petCenterX = 1280;
+      let petBottomY = 820;
+      let positionInitialized = false;
+
+      let isMouseDown = false;
+      let isDragging = false;
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let lastDragX = 0;
+      let lastDragY = 0;
+
+      let bubbleOpen = false;
+      let menuOpen = false;
+      let bubbleTimer = null;
+      let isPollingConfig = false;
+      let isFetchingUsage = false;
+      let failedPolls = 0;
+      let shouldQuit = false;
+      let lastPublishedTitle = '';
+
+      let winX = 1200;
+      let winY = 680;
+      let winW = 120;
+      let winH = 124;
+
+      function clamp(val, min, max) {
+        return Math.max(min, Math.min(max, val));
+      }
+
+      function getPetDims() {
+        const w = Math.round(clamp(petSize, 48, 220));
+        const h = Math.round((w * CELL_H) / CELL_W);
+        return { w, h };
+      }
+
+      function setState(next, durationSeconds) {
+        if (state !== next) {
+          state = next;
+          frameIndex = 0;
+          frameElapsed = 0;
+        }
+        stateRemaining = durationSeconds;
+      }
+
+      function publishWindowState() {
+        const { w: petW, h: petH } = getPetDims();
+        const bubbleRect = bubbleOpen ? speechBubble.getBoundingClientRect() : null;
+        const bubbleW = bubbleOpen ? Math.max(296, Math.ceil(bubbleRect?.width || 296)) : 0;
+        const bubbleH = bubbleOpen ? Math.max(120, Math.ceil(bubbleRect?.height || 220)) : 0;
+        const menuW = menuOpen ? 168 : 0;
+        const menuH = menuOpen ? 82 : 0;
+
+        const neededW = Math.max(petW + PAD_X * 2, bubbleOpen ? bubbleW + 16 : 0, menuOpen ? menuW + 16 : 0);
+        const topExtra = bubbleOpen ? bubbleH + 10 : (menuOpen ? menuH + 8 : 0);
+        const neededH = petH + PAD_BOTTOM + 10 + topExtra;
+
+        winW = Math.ceil(neededW);
+        winH = Math.ceil(neededH);
+
+        const halfPet = petW / 2;
+        const minCenterX = host.screenLeft + halfPet;
+        const maxCenterX = Math.max(minCenterX, host.screenLeft + host.screenW - halfPet);
+        const minBottomY = host.screenTop + petH;
+        const maxBottomY = Math.max(minBottomY, host.screenTop + host.screenH);
+
+        petCenterX = clamp(petCenterX, minCenterX, maxCenterX);
+        petBottomY = clamp(petBottomY, minBottomY, maxBottomY);
+
+        const maxWinX = Math.max(host.screenLeft, host.screenLeft + host.screenW - winW);
+        const maxWinY = Math.max(host.screenTop, host.screenTop + host.screenH - winH);
+
+        winX = Math.round(clamp(petCenterX - winW / 2, host.screenLeft, maxWinX));
+        winY = Math.round(clamp(petBottomY - (winH - PAD_BOTTOM), host.screenTop, maxWinY));
+
+        const localPetCenterX = petCenterX - winX;
+        const localPetBottomY = petBottomY - winY;
+        const canvasLeft = Math.round(localPetCenterX - petW / 2);
+        const canvasTop = Math.round(localPetBottomY - petH);
+
+        if (petCanvas.width !== petW || petCanvas.height !== petH) {
+          petCanvas.width = petW;
+          petCanvas.height = petH;
+        }
+        petCanvas.style.width = `${petW}px`;
+        petCanvas.style.height = `${petH}px`;
+        petCanvas.style.left = `${canvasLeft}px`;
+        petCanvas.style.top = `${canvasTop}px`;
+
+        if (bubbleOpen) {
+          const bLeft = Math.round(clamp(localPetCenterX - bubbleW / 2, 4, Math.max(4, winW - bubbleW - 4)));
+          const bTop = Math.max(4, canvasTop - bubbleH - 6);
+          speechBubble.style.left = `${bLeft}px`;
+          speechBubble.style.top = `${bTop}px`;
+          const tail = speechBubble.querySelector('.bubble-tail');
+          if (tail) {
+            const tailOffset = clamp(localPetCenterX - (bLeft + bubbleW / 2), -bubbleW / 2 + 16, bubbleW / 2 - 16);
+            tail.style.transform = `translateX(${Math.round(tailOffset)}px)`;
+          }
+        }
+
+        if (menuOpen) {
+          const mLeft = Math.round(clamp(localPetCenterX - 82, 4, Math.max(4, winW - 168)));
+          const mTop = Math.max(4, canvasTop - menuH - 4);
+          ctxMenu.style.left = `${mLeft}px`;
+          ctxMenu.style.top = `${mTop}px`;
+        }
+
+        const payload = JSON.stringify({
+          ready: true,
+          x: winX,
+          y: winY,
+          w: winW,
+          h: winH,
+          quit: shouldQuit,
+        });
+        if (payload !== lastPublishedTitle) {
+          lastPublishedTitle = payload;
+          document.title = payload;
+        }
+      }
+
+      window.__updateMacHost = function (cursorX, cursorY, mouseButtons, screenLeft, screenTop, screenW, screenH) {
+        if (Number.isFinite(screenW) && screenW >= 100 && Number.isFinite(screenH) && screenH >= 100) {
+          const firstBounds = !host.hasBounds;
+          host.screenLeft = screenLeft;
+          host.screenTop = screenTop;
+          host.screenW = screenW;
+          host.screenH = screenH;
+          host.hasBounds = true;
+          if (firstBounds) {
+            petCenterX = host.screenLeft + host.screenW - Math.max(petSize, 120);
+            petBottomY = host.screenTop + host.screenH - 12;
+            positionInitialized = true;
+            publishWindowState();
+          }
+        }
+        if (Number.isFinite(cursorX) && Number.isFinite(cursorY)) {
+          host.cursorX = cursorX;
+          host.cursorY = cursorY;
+        }
+        host.mouseButtons = Number(mouseButtons) || 0;
+        if (isDragging && (host.mouseButtons & 1) === 0) {
+          isMouseDown = false;
+          isDragging = false;
+          petCanvas.classList.remove('is-dragging');
+        }
+      };
+
+      function showSpeechBubble() {
+        hideContextMenu();
+        bubbleOpen = true;
+        speechBubble.classList.add('is-open');
+        clearTimeout(bubbleTimer);
+        bubbleTimer = setTimeout(hideSpeechBubble, 12000);
+        requestAnimationFrame(publishWindowState);
+      }
+
+      function hideSpeechBubble() {
+        clearTimeout(bubbleTimer);
+        bubbleOpen = false;
+        speechBubble.classList.remove('is-open');
+        publishWindowState();
+      }
+
+      function showContextMenu() {
+        hideSpeechBubble();
+        menuOpen = true;
+        ctxMenu.classList.add('is-open');
+        publishWindowState();
+      }
+
+      function hideContextMenu() {
+        menuOpen = false;
+        ctxMenu.classList.remove('is-open');
+      }
+
+      function stripThinkingLevel(label) {
+        return String(label ?? '')
+          .replace(
+            /\s*(?:\((?:x-?high|extra\s*high|ultra\s*high|high|medium|med|low|minimal|min|max|none|thinking|non-thinking|extended\s*thinking|standard)(?:\s+thinking)?\)|[-–—]\s*(?:x-?high|extra\s*high|high|medium|med|low|minimal|thinking))\s*$/i,
+            ''
+          )
+          .trim();
+      }
+
+      function stripModelIdThinkingSuffix(modelId) {
+        return String(modelId ?? '')
+          .replace(
+            /-(?:x-?high|extra-?high|ultra-?high|high|medium|med|low|minimal|min|max|none|thinking|non-thinking)$/i,
+            ''
+          )
+          .trim();
+      }
+
+      function groupUsageModels(rawModels) {
+        const list = Array.isArray(rawModels) ? rawModels : [];
+        const hasNumericQuota = list.some((m) => typeof m?.remainingFraction === 'number');
+        const active = list.filter((m) => {
+          const hasFrac = typeof m?.remainingFraction === 'number';
+          if (m?.disabled && !hasFrac) return false;
+          if (hasNumericQuota && !hasFrac) return false;
+          return true;
+        });
+
+        const groups = new Map();
+        for (const item of active) {
+          const rawLabel = item?.label ? String(item.label) : (item?.modelId || 'Unknown');
+          const baseLabel = stripThinkingLevel(rawLabel) || rawLabel.trim();
+          const baseId = stripModelIdThinkingSuffix(item?.modelId);
+          const key = (baseLabel || baseId || 'unknown').toLowerCase();
+          const existing = groups.get(key);
+          if (!existing) {
+            groups.set(key, {
+              label: baseLabel,
+              modelId: baseId,
+              remainingFraction: typeof item?.remainingFraction === 'number' ? item.remainingFraction : null,
+              resetTime: item?.resetTime || null,
+            });
+          } else {
+            if (typeof item?.remainingFraction === 'number') {
+              existing.remainingFraction =
+                typeof existing.remainingFraction === 'number'
+                  ? Math.min(existing.remainingFraction, item.remainingFraction)
+                  : item.remainingFraction;
+            }
+            if (!existing.resetTime && item?.resetTime) {
+              existing.resetTime = item.resetTime;
+            }
+          }
+        }
+        return Array.from(groups.values());
+      }
+
+      function formatResetTime(resetTime) {
+        if (!resetTime) return '';
+        const ms = Date.parse(resetTime);
+        if (!Number.isFinite(ms)) return '';
+        const diffMin = (ms - Date.now()) / 60000;
+        if (diffMin < 1) return 'soon';
+        if (diffMin < 60) return `in ${Math.floor(diffMin)}m`;
+        const totalHours = Math.floor(diffMin / 60);
+        if (totalHours < 24) return `in ${totalHours}h ${Math.floor(diffMin) % 60}m`;
+        const d = new Date(ms);
+        const mon = d.toLocaleString('en-US', { month: 'short' });
+        const day = d.getDate();
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mm = String(d.getMinutes()).padStart(2, '0');
+        return `${mon} ${day} ${hh}:${mm}`;
+      }
+
+      async function showModelUsage() {
+        if (isFetchingUsage) return;
+        isFetchingUsage = true;
+        try {
+          bubbleSub.textContent = `${petDisplayName} · Checking…`;
+          bubbleStatus.textContent = 'Checking remaining usage…';
+          bubbleStatus.classList.add('is-visible');
+          modelsList.innerHTML = '';
+          showSpeechBubble();
+
+          const res = await fetch('/api/usage');
+          const usage = await res.json();
+          if (!res.ok || !usage || !Array.isArray(usage.models) || usage.models.length === 0) {
+            bubbleSub.textContent = 'No active quotas';
+            bubbleStatus.textContent = usage?.error || 'No model usage data returned.';
+            bubbleStatus.classList.add('is-visible');
+            showSpeechBubble();
+            return;
+          }
+
+          const grouped = groupUsageModels(usage.models).sort(
+            (a, b) => (a.remainingFraction ?? 2) - (b.remainingFraction ?? 2)
+          );
+
+          if (grouped.length === 0) {
+            bubbleSub.textContent = 'No active quotas';
+            bubbleStatus.textContent = 'No active model quota returned.';
+            bubbleStatus.classList.add('is-visible');
+            modelsList.innerHTML = '';
+            showSpeechBubble();
+            return;
+          }
+
+          const resetDates = grouped
+            .map((m) => (m.resetTime ? Date.parse(m.resetTime) : NaN))
+            .filter((n) => Number.isFinite(n));
+          const soonest = resetDates.length > 0 ? Math.min(...resetDates) : null;
+          const sharedReset =
+            soonest !== null &&
+            resetDates.length === grouped.length &&
+            resetDates.every((r) => Math.abs(r - soonest) < 120000);
+
+          const countLabel = grouped.length === 1 ? '1 model' : `${grouped.length} models`;
+          if (soonest !== null) {
+            const phrase = formatResetTime(new Date(soonest).toISOString());
+            bubbleSub.textContent = phrase
+              ? `${countLabel} · ${sharedReset ? 'Resets' : 'Next reset'} ${phrase}`
+              : countLabel;
+          } else {
+            bubbleSub.textContent = countLabel;
+          }
+
+          bubbleStatus.classList.remove('is-visible');
+          modelsList.innerHTML = '';
+
+          for (const m of grouped) {
+            const hasFrac = typeof m.remainingFraction === 'number';
+            const frac = hasFrac ? clamp(m.remainingFraction, 0, 1) : 0;
+            const pct = Math.round(frac * 100);
+            const barColor = !hasFrac
+              ? '#6f6f78'
+              : pct > 50
+                ? '#4ade80'
+                : pct > 20
+                  ? '#fcd34d'
+                  : '#f87171';
+            const textColor = !hasFrac
+              ? '#9b9ba4'
+              : pct > 50
+                ? '#f3f3f4'
+                : pct > 20
+                  ? '#fcd34d'
+                  : '#f87171';
+            const pctText = !hasFrac
+              ? '—'
+              : pct <= 20
+                ? `Low · ${pct}%`
+                : pct <= 50
+                  ? `Warn · ${pct}%`
+                  : `${pct}%`;
+
+            const row = document.createElement('div');
+            row.className = 'model-row';
+
+            const meta = document.createElement('div');
+            meta.className = 'model-meta';
+
+            const nameEl = document.createElement('span');
+            nameEl.className = 'model-name';
+            nameEl.textContent = m.label || m.modelId || 'Unknown';
+
+            const rightEl = document.createElement('span');
+            rightEl.className = 'model-right';
+
+            if (!sharedReset && m.resetTime) {
+              const resetEl = document.createElement('span');
+              resetEl.className = 'model-reset';
+              resetEl.textContent = formatResetTime(m.resetTime);
+              rightEl.appendChild(resetEl);
+            }
+
+            const pctEl = document.createElement('span');
+            pctEl.className = 'model-pct';
+            pctEl.style.color = textColor;
+            pctEl.textContent = pctText;
+            rightEl.appendChild(pctEl);
+
+            meta.appendChild(nameEl);
+            meta.appendChild(rightEl);
+
+            const track = document.createElement('div');
+            track.className = 'bar-track';
+
+            const fill = document.createElement('div');
+            fill.className = 'bar-fill';
+            fill.style.background = barColor;
+            fill.style.width = `${hasFrac ? Math.round(frac * 1000) / 10 : 0}%`;
+            track.appendChild(fill);
+
+            row.appendChild(meta);
+            row.appendChild(track);
+            modelsList.appendChild(row);
+          }
+
+          showSpeechBubble();
+        } catch (err) {
+          bubbleSub.textContent = 'Unavailable';
+          bubbleStatus.textContent = `Unable to load usage limits (${err?.message || 'error'}).`;
+          bubbleStatus.classList.add('is-visible');
+          modelsList.innerHTML = '';
+          showSpeechBubble();
+        } finally {
+          isFetchingUsage = false;
+        }
+      }
+
+      async function pollConfig() {
+        if (isPollingConfig || shouldQuit) return;
+        isPollingConfig = true;
+        try {
+          const res = await fetch('/api/config');
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const cfg = await res.json();
+          failedPolls = 0;
+          if (!cfg) return;
+
+          if (cfg.overlayEnabled === false) {
+            shouldQuit = true;
+            publishWindowState();
+            return;
+          }
+
+          if (cfg.displayName) petDisplayName = String(cfg.displayName);
+          if (Number(cfg.size) > 0 && Math.abs(Number(cfg.size) - petSize) > 0.5) {
+            petSize = clamp(Number(cfg.size), 48, 220);
+            publishWindowState();
+          }
+          if (Number(cfg.speed) > 0) {
+            speed = clamp(Number(cfg.speed), 0.5, 3.0);
+          }
+          if (cfg.behavior) {
+            behavior = String(cfg.behavior);
+          }
+          if (cfg.spritesheet && cfg.spritesheet !== loadedSpritesheet) {
+            loadedSpritesheet = cfg.spritesheet;
+            const img = new Image();
+            img.onload = () => {
+              if (loadedSpritesheet === cfg.spritesheet) {
+                spriteImg = img;
+              }
+            };
+            img.src = `/api/sprite?path=${encodeURIComponent(cfg.spritesheet)}`;
+          }
+        } catch {
+          failedPolls += 1;
+          if (failedPolls >= 5) {
+            shouldQuit = true;
+            publishWindowState();
+          }
+        } finally {
+          isPollingConfig = false;
+        }
+      }
+
+      function updateBehavior(dt) {
+        if (isDragging) return;
+
+        if (bubbleOpen || menuOpen) {
+          if (state === PetState.WalkLeft || state === PetState.WalkRight) {
+            setState(PetState.Idle, 1.5);
+          } else if (state === PetState.Waving || state === PetState.Jumping) {
+            stateRemaining -= dt;
+            if (stateRemaining <= 0) setState(PetState.Idle, 1.5);
+          }
+          return;
+        }
+
+        const { w: petW } = getPetDims();
+        const halfPet = petW / 2;
+        const minX = host.screenLeft + halfPet;
+        const maxX = Math.max(minX, host.screenLeft + host.screenW - halfPet);
+
+        if (behavior.toLowerCase() === 'idle') {
+          stateRemaining -= dt;
+          if (state !== PetState.Idle && state !== PetState.Waving) {
+            setState(PetState.Idle, 3.0);
+          } else if (stateRemaining <= 0) {
+            setState(Math.random() < 0.25 ? PetState.Waving : PetState.Idle, 1.5 + Math.random() * 3.0);
+          }
+          return;
+        }
+
+        if (behavior.toLowerCase() === 'follow') {
+          if (host.cursorX !== null) {
+            const dx = host.cursorX - petCenterX;
+            if (Math.abs(dx) > 48) {
+              const dir = dx > 0 ? PetState.WalkRight : PetState.WalkLeft;
+              if (state !== dir) setState(dir, 0.5);
+              petCenterX = clamp(petCenterX + Math.sign(dx) * BASE_WALK_SPEED * speed * dt, minX, maxX);
+              publishWindowState();
+            } else if (state === PetState.WalkLeft || state === PetState.WalkRight) {
+              setState(PetState.Idle, 1.0);
+            } else {
+              stateRemaining -= dt;
+              if (stateRemaining <= 0) setState(PetState.Idle, 2.0);
+            }
+          }
+          return;
+        }
+
+        // Default: roam
+        if (state === PetState.WalkRight) {
+          petCenterX += BASE_WALK_SPEED * speed * dt;
+          if (petCenterX >= maxX) {
+            petCenterX = maxX;
+            setState(PetState.WalkLeft, 2.5 + Math.random() * 3.0);
+          }
+          publishWindowState();
+        } else if (state === PetState.WalkLeft) {
+          petCenterX -= BASE_WALK_SPEED * speed * dt;
+          if (petCenterX <= minX) {
+            petCenterX = minX;
+            setState(PetState.WalkRight, 2.5 + Math.random() * 3.0);
+          }
+          publishWindowState();
+        }
+
+        stateRemaining -= dt;
+        if (stateRemaining <= 0) {
+          const roll = Math.random();
+          if (roll < 0.45) {
+            let dir = Math.random() < 0.5 ? PetState.WalkLeft : PetState.WalkRight;
+            if (petCenterX <= minX + 10) dir = PetState.WalkRight;
+            if (petCenterX >= maxX - 10) dir = PetState.WalkLeft;
+            setState(dir, 2.5 + Math.random() * 3.5);
+          } else if (roll < 0.75) {
+            setState(PetState.Idle, 1.5 + Math.random() * 2.5);
+          } else if (roll < 0.90) {
+            setState(PetState.Waving, 1.4 + Math.random() * 0.8);
+          } else {
+            setState(PetState.Jumping, 1.1 + Math.random() * 0.6);
+          }
+        }
+      }
+
+      function renderPet(dt) {
+        const spec = ROW_FRAMES[state] || ROW_FRAMES[PetState.Idle];
+        const interval =
+          state === PetState.WalkLeft || state === PetState.WalkRight
+            ? 0.11 / clamp(speed, 0.5, 3.0)
+            : 0.14;
+
+        frameElapsed += dt;
+        if (frameElapsed >= interval) {
+          frameElapsed = 0;
+          frameIndex = (frameIndex + 1) % spec.count;
+        }
+
+        const { w: petW, h: petH } = getPetDims();
+        ctx.clearRect(0, 0, petW, petH);
+        ctx.imageSmoothingEnabled = false;
+
+        if (spriteImg && spriteImg.complete && spriteImg.naturalWidth > 0) {
+          const frame = frameIndex % spec.count;
+          ctx.drawImage(
+            spriteImg,
+            frame * CELL_W,
+            spec.row * CELL_H,
+            CELL_W,
+            CELL_H,
+            0,
+            0,
+            petW,
+            petH
+          );
+        }
+      }
+
+      function getPointerScreen(e) {
+        if (host.cursorX !== null && host.cursorY !== null && Number.isFinite(e.screenX) === false) {
+          return { x: host.cursorX, y: host.cursorY };
+        }
+        return {
+          x: Number.isFinite(e.screenX) ? e.screenX : (host.cursorX ?? 0),
+          y: Number.isFinite(e.screenY) ? e.screenY : (host.cursorY ?? 0),
+        };
+      }
+
+      petCanvas.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
+        hideContextMenu();
+        isMouseDown = true;
+        isDragging = false;
+        const pt = getPointerScreen(e);
+        dragStartX = pt.x;
+        dragStartY = pt.y;
+        lastDragX = pt.x;
+        lastDragY = pt.y;
+        petCanvas.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+
+      petCanvas.addEventListener('pointermove', (e) => {
+        if (!isMouseDown) return;
+        const pt = getPointerScreen(e);
+        if (!isDragging) {
+          if (Math.abs(pt.x - dragStartX) >= 4 || Math.abs(pt.y - dragStartY) >= 4) {
+            isDragging = true;
+            petCanvas.classList.add('is-dragging');
+            setState(PetState.Idle, 1.0);
+          }
+        }
+        if (isDragging) {
+          petCenterX += pt.x - lastDragX;
+          petBottomY += pt.y - lastDragY;
+          lastDragX = pt.x;
+          lastDragY = pt.y;
+          publishWindowState();
+        }
+      });
+
+      async function handlePointerFinish(e) {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        petCanvas.classList.remove('is-dragging');
+        try {
+          if (petCanvas.hasPointerCapture(e.pointerId)) {
+            petCanvas.releasePointerCapture(e.pointerId);
+          }
+        } catch {}
+        const wasDragging = isDragging;
+        isDragging = false;
+        if (!wasDragging) {
+          if (bubbleOpen) {
+            hideSpeechBubble();
+          } else {
+            setState(PetState.Waving, 1.6);
+            await showModelUsage();
+          }
+        }
+      }
+
+      petCanvas.addEventListener('pointerup', handlePointerFinish);
+      petCanvas.addEventListener('pointercancel', handlePointerFinish);
+
+      petCanvas.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if (menuOpen) {
+          hideContextMenu();
+          publishWindowState();
+        } else {
+          showContextMenu();
+        }
+      });
+
+      speechBubble.addEventListener('click', () => hideSpeechBubble());
+
+      menuUsage.addEventListener('click', async () => {
+        hideContextMenu();
+        setState(PetState.Waving, 1.6);
+        await showModelUsage();
+      });
+
+      menuClose.addEventListener('click', () => {
+        shouldQuit = true;
+        publishWindowState();
+      });
+
+      window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      let lastTs = performance.now();
+      function tick(now) {
+        const dt = Math.min(0.1, (now - lastTs) / 1000);
+        lastTs = now;
+        if (positionInitialized) {
+          updateBehavior(dt);
+          renderPet(dt);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      if (!positionInitialized) {
+        petCenterX = host.screenLeft + host.screenW - Math.max(petSize, 120);
+        petBottomY = host.screenTop + host.screenH - 12;
+        positionInitialized = true;
+      }
+
+      publishWindowState();
+      pollConfig();
+      setInterval(pollConfig, 1500);
+      requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>

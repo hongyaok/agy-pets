@@ -3,7 +3,7 @@
  *
  * Serves the interactive pet UI, caches petdex.dev manifest & WebP sprites,
  * persists pet configuration, queries Antigravity Language Server for live
- * model usage, and manages the Windows WPF desktop overlay process.
+ * model usage, and manages the desktop overlay process (Windows WPF / macOS Cocoa).
  */
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -18,6 +18,8 @@ const FONTS_DIR = join(__dirname, 'fonts');
 const SPRITES_CACHE_DIR = join(CACHE_DIR, 'sprites');
 const MANIFEST_CACHE_PATH = join(CACHE_DIR, 'manifest-v2.json');
 const CONFIG_PATH = join(CACHE_DIR, 'config.json');
+const OVERLAY_HTML_PATH = join(__dirname, 'overlay.html');
+const MAC_OVERLAY_SCRIPT = join(__dirname, 'overlay-mac.jxa.js');
 const OVERLAY_EXE = join(
   PLUGIN_ROOT,
   'overlay',
@@ -246,8 +248,50 @@ function killWindowsOverlayProcesses(exceptPid = null) {
   }
 }
 
+function getMacOverlayPids() {
+  if (process.platform !== 'darwin') return [];
+  try {
+    const res = spawnSync('pgrep', ['-f', 'overlay-mac.jxa.js'], {
+      encoding: 'utf-8',
+    });
+    if (res.status !== 0 || typeof res.stdout !== 'string') return [];
+    return res.stdout
+      .trim()
+      .split(/\s+/)
+      .map((s) => Number.parseInt(s, 10))
+      .filter((n) => Number.isInteger(n) && n > 0 && n !== process.pid);
+  } catch {
+    return [];
+  }
+}
+
+function isMacOverlayProcessRunning() {
+  return getMacOverlayPids().length > 0;
+}
+
+function killMacOverlayProcesses(exceptPid = null) {
+  if (process.platform !== 'darwin') return false;
+  const pids = getMacOverlayPids().filter((pid) => pid !== exceptPid);
+  let killed = false;
+  for (const pid of pids) {
+    try {
+      process.kill(pid, 'SIGKILL');
+      killed = true;
+    } catch {
+      // Ignore if already exited.
+    }
+  }
+  return killed;
+}
+
+function killStaleOverlayProcesses(exceptPid = null) {
+  if (process.platform === 'win32') return killWindowsOverlayProcesses(exceptPid);
+  if (process.platform === 'darwin') return killMacOverlayProcesses(exceptPid);
+  return false;
+}
+
 function isOverlayRunning() {
-  return isOwnOverlayRunning() || isWindowsOverlayProcessRunning();
+  return isOwnOverlayRunning() || isWindowsOverlayProcessRunning() || isMacOverlayProcessRunning();
 }
 
 function stopOverlay() {
@@ -256,15 +300,15 @@ function stopOverlay() {
 
   if (overlayProc) {
     try {
-      overlayProc.kill();
+      overlayProc.kill('SIGKILL');
     } catch {
       // Ignore if already exited.
     }
     overlayProc = null;
   }
 
-  const killedByTaskkill = killWindowsOverlayProcesses();
-  return wasRunning || killedByTaskkill;
+  const killedByPlatform = killStaleOverlayProcesses();
+  return wasRunning || killedByPlatform;
 }
 
 process.on('exit', () => {
@@ -287,6 +331,13 @@ app.page('/', () => {
     return '<!doctype html><html><body><h2>Antigravity Pets UI not found</h2></body></html>';
   }
   return readFileSync(indexPath, 'utf-8');
+});
+
+app.page('/overlay', () => {
+  if (!existsSync(OVERLAY_HTML_PATH)) {
+    return '<!doctype html><html><body><h2>Overlay UI not found</h2></body></html>';
+  }
+  return readFileSync(OVERLAY_HTML_PATH, 'utf-8');
 });
 
 app.api(
@@ -526,10 +577,16 @@ app.api(
   '/api/overlay/status',
   () => {
     const running = isOverlayRunning();
+    const executableExists =
+      process.platform === 'darwin'
+        ? existsSync(MAC_OVERLAY_SCRIPT) && existsSync('/usr/bin/osascript')
+        : process.platform === 'win32'
+          ? existsSync(OVERLAY_EXE)
+          : false;
     return {
       running,
       pid: isOwnOverlayRunning() ? overlayProc.pid : null,
-      executableExists: existsSync(OVERLAY_EXE),
+      executableExists,
     };
   },
   'GET'
@@ -537,24 +594,41 @@ app.api(
 
 app.api(
   '/api/overlay/start',
-  () => {
+  async () => {
     if (isOwnOverlayRunning()) {
-      killWindowsOverlayProcesses(overlayProc.pid);
+      killStaleOverlayProcesses(overlayProc.pid);
       saveOverlayEnabled(true);
       return { running: true, pid: overlayProc.pid, alreadyRunning: true };
     }
 
-    killWindowsOverlayProcesses();
+    killStaleOverlayProcesses();
     overlayProc = null;
-    saveOverlayEnabled(true);
 
     const port = process.env.ANTIGRAVITY_SIDECAR_WEB_PORT;
-    const useExe = existsSync(OVERLAY_EXE);
-    const cmd = useExe ? OVERLAY_EXE : 'dotnet';
-    const args = useExe
-      ? ['--port', String(port)]
-      : ['run', '--project', OVERLAY_PROJECT, '--no-build', '-c', 'Release', '--', '--port', String(port)];
+    let cmd;
+    let args;
 
+    if (process.platform === 'darwin') {
+      if (!existsSync(MAC_OVERLAY_SCRIPT) || !existsSync(OVERLAY_HTML_PATH)) {
+        saveOverlayEnabled(false);
+        return jsonError(500, 'macOS overlay script or UI file is missing');
+      }
+      cmd = '/usr/bin/osascript';
+      args = ['-l', 'JavaScript', MAC_OVERLAY_SCRIPT, String(port)];
+    } else if (process.platform === 'win32') {
+      const useExe = existsSync(OVERLAY_EXE);
+      cmd = useExe ? OVERLAY_EXE : 'dotnet';
+      args = useExe
+        ? ['--port', String(port)]
+        : ['run', '--project', OVERLAY_PROJECT, '--no-build', '-c', 'Release', '--', '--port', String(port)];
+    } else {
+      saveOverlayEnabled(false);
+      return jsonError(501, `Desktop overlay is not supported on ${process.platform}`);
+    }
+
+    saveOverlayEnabled(true);
+
+    let spawnError = null;
     const child = spawn(cmd, args, {
       detached: false,
       windowsHide: false,
@@ -564,15 +638,31 @@ app.api(
     child.on('exit', () => {
       if (overlayProc === child) {
         overlayProc = null;
+        saveOverlayEnabled(false);
       }
     });
-    child.on('error', () => {
+    child.on('error', (err) => {
+      spawnError = err;
       if (overlayProc === child) {
         overlayProc = null;
+        saveOverlayEnabled(false);
       }
     });
 
     overlayProc = child;
+
+    await new Promise((resolveDelay) => setTimeout(resolveDelay, 120));
+    if (spawnError || child.exitCode !== null || child.killed) {
+      if (overlayProc === child) {
+        overlayProc = null;
+      }
+      saveOverlayEnabled(false);
+      return jsonError(
+        500,
+        spawnError ? `Desktop overlay failed to start: ${spawnError.message}` : 'Desktop overlay failed to start'
+      );
+    }
+
     return { running: true, pid: child.pid, alreadyRunning: false };
   },
   'POST'
