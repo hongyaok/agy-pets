@@ -5,7 +5,7 @@
  * persists pet configuration, queries Antigravity Language Server for live
  * model usage, and manages the Windows WPF desktop overlay process.
  */
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,6 +14,7 @@ import { Response, SidecarApp } from 'sidecar_sdk';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PLUGIN_ROOT = resolve(__dirname, '..', '..');
 const CACHE_DIR = join(__dirname, 'cache');
+const FONTS_DIR = join(__dirname, 'fonts');
 const SPRITES_CACHE_DIR = join(CACHE_DIR, 'sprites');
 const MANIFEST_CACHE_PATH = join(CACHE_DIR, 'manifest-v2.json');
 const CONFIG_PATH = join(CACHE_DIR, 'config.json');
@@ -39,6 +40,7 @@ const DEFAULT_CONFIG = {
   size: 96,
   speed: 1.0,
   behavior: 'roam',
+  overlayEnabled: false,
 };
 
 mkdirSync(SPRITES_CACHE_DIR, { recursive: true });
@@ -172,6 +174,21 @@ function readConfig() {
   }
 }
 
+function writeConfigFile(cfg) {
+  mkdirSync(CACHE_DIR, { recursive: true });
+  writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2), 'utf-8');
+}
+
+function saveOverlayEnabled(enabled) {
+  try {
+    const current = readConfig();
+    const next = sanitizeConfig({ ...current, overlayEnabled: Boolean(enabled) });
+    writeConfigFile(next);
+  } catch {
+    // Ignore transient config write errors.
+  }
+}
+
 function sanitizeConfig(input) {
   const sizeNum = Number(input.size);
   const speedNum = Number(input.speed);
@@ -193,34 +210,72 @@ function sanitizeConfig(input) {
     size: Number.isFinite(sizeNum) ? Math.min(256, Math.max(32, Math.round(sizeNum))) : DEFAULT_CONFIG.size,
     speed: Number.isFinite(speedNum) ? Math.min(4.0, Math.max(0.25, Number(speedNum.toFixed(2)))) : DEFAULT_CONFIG.speed,
     behavior,
+    overlayEnabled: Boolean(input.overlayEnabled),
   };
 }
 
-function isOverlayRunning() {
+function isOwnOverlayRunning() {
   return Boolean(overlayProc && overlayProc.exitCode === null && !overlayProc.killed);
 }
 
-function stopOverlay() {
-  if (!isOverlayRunning()) {
-    overlayProc = null;
+function isWindowsOverlayProcessRunning() {
+  if (process.platform !== 'win32') return false;
+  try {
+    const res = spawnSync(
+      'tasklist',
+      ['/FI', 'IMAGENAME eq AgyPetsOverlay.exe', '/FO', 'CSV', '/NH'],
+      { encoding: 'utf-8', windowsHide: true }
+    );
+    return res.status === 0 && typeof res.stdout === 'string' && res.stdout.includes('AgyPetsOverlay.exe');
+  } catch {
     return false;
   }
-  try {
-    overlayProc.kill();
-  } catch {
-    // Ignore if already exited.
-  }
-  overlayProc = null;
-  return true;
 }
 
-process.on('exit', () => stopOverlay());
+function killWindowsOverlayProcesses(exceptPid = null) {
+  if (process.platform !== 'win32') return false;
+  try {
+    const args = ['/F', '/T', '/IM', 'AgyPetsOverlay.exe'];
+    if (Number.isInteger(exceptPid) && exceptPid > 0) {
+      args.push('/FI', `PID ne ${exceptPid}`);
+    }
+    const res = spawnSync('taskkill', args, { encoding: 'utf-8', windowsHide: true });
+    return res.status === 0;
+  } catch {
+    return false;
+  }
+}
+
+function isOverlayRunning() {
+  return isOwnOverlayRunning() || isWindowsOverlayProcessRunning();
+}
+
+function stopOverlay() {
+  const wasRunning = isOverlayRunning();
+  saveOverlayEnabled(false);
+
+  if (overlayProc) {
+    try {
+      overlayProc.kill();
+    } catch {
+      // Ignore if already exited.
+    }
+    overlayProc = null;
+  }
+
+  const killedByTaskkill = killWindowsOverlayProcesses();
+  return wasRunning || killedByTaskkill;
+}
+
+process.on('exit', () => {
+  if (isOwnOverlayRunning()) stopOverlay();
+});
 process.on('SIGINT', () => {
-  stopOverlay();
+  if (isOwnOverlayRunning()) stopOverlay();
   process.exit(0);
 });
 process.on('SIGTERM', () => {
-  stopOverlay();
+  if (isOwnOverlayRunning()) stopOverlay();
   process.exit(0);
 });
 
@@ -313,15 +368,38 @@ app.api(
   'GET'
 );
 
+app.api(
+  '/api/font',
+  (data) => {
+    const rawName = typeof data?.name === 'string' ? data.name.trim() : '';
+    if (!/^[a-z0-9\-]+\.woff2$/i.test(rawName)) {
+      return jsonError(400, 'Invalid or missing font name');
+    }
+    const fontPath = resolve(FONTS_DIR, rawName);
+    const rootPrefix = resolve(FONTS_DIR) + sep;
+    if (!fontPath.startsWith(rootPrefix) || !existsSync(fontPath)) {
+      return jsonError(404, 'Font not found');
+    }
+    return new Response(readFileSync(fontPath), {
+      contentType: 'font/woff2',
+      headers: { 'Cache-Control': 'public, max-age=31536000' },
+    });
+  },
+  'GET'
+);
+
 app.api('/api/config', () => readConfig(), 'GET');
 
 app.api(
   '/api/config',
   (data) => {
     const current = readConfig();
-    const next = sanitizeConfig({ ...current, ...(data || {}) });
-    mkdirSync(CACHE_DIR, { recursive: true });
-    writeFileSync(CONFIG_PATH, JSON.stringify(next, null, 2), 'utf-8');
+    const next = sanitizeConfig({
+      ...current,
+      ...(data || {}),
+      overlayEnabled: current.overlayEnabled,
+    });
+    writeConfigFile(next);
     return next;
   },
   'POST'
@@ -446,20 +524,29 @@ app.api(
 
 app.api(
   '/api/overlay/status',
-  () => ({
-    running: isOverlayRunning(),
-    pid: isOverlayRunning() ? overlayProc.pid : null,
-    executableExists: existsSync(OVERLAY_EXE),
-  }),
+  () => {
+    const running = isOverlayRunning();
+    return {
+      running,
+      pid: isOwnOverlayRunning() ? overlayProc.pid : null,
+      executableExists: existsSync(OVERLAY_EXE),
+    };
+  },
   'GET'
 );
 
 app.api(
   '/api/overlay/start',
   () => {
-    if (isOverlayRunning()) {
+    if (isOwnOverlayRunning()) {
+      killWindowsOverlayProcesses(overlayProc.pid);
+      saveOverlayEnabled(true);
       return { running: true, pid: overlayProc.pid, alreadyRunning: true };
     }
+
+    killWindowsOverlayProcesses();
+    overlayProc = null;
+    saveOverlayEnabled(true);
 
     const port = process.env.ANTIGRAVITY_SIDECAR_WEB_PORT;
     const useExe = existsSync(OVERLAY_EXE);

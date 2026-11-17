@@ -25,96 +25,118 @@
                 <StackPanel.RenderTransform>
                     <TranslateTransform x:Name="BubbleTranslate" Y="0" />
                 </StackPanel.RenderTransform>
-                <Border Width="292"
-                        Padding="14,12,14,14"
-                        CornerRadius="12"
-                        Background="#F518181B"
-                        BorderBrush="#24FFFFFF"
-                        BorderThickness="1">
+                <Border Width="296"
+                        CornerRadius="0"
+                        Background="#FA141418"
+                        BorderBrush="#FF3A3A46"
+                        BorderThickness="2">
                     <Border.Effect>
-                        <DropShadowEffect BlurRadius="18" ShadowDepth="5" Opacity="0.52" Color="#000000" />
+                        <DropShadowEffect BlurRadius="0" ShadowDepth="4" Direction="315" Opacity="0.88" Color="#000000" />
                     </Border.Effect>
-                    <StackPanel>
-                        <DockPanel LastChildFill="False">
-                            <StackPanel DockPanel.Dock="Left">
-                                <TextBlock x:Name="BubbleTitle"
-                                           Text="Usage limits"
-                                           FontFamily="Segoe UI Variable Text, Segoe UI"
-                                           FontSize="12.5"
-                                           FontWeight="SemiBold"
-                                           Foreground="#F3F3F4" />
-                                <TextBlock x:Name="BubbleSub"
-                                           Text="Checking…"
-                                           Margin="0,2,0,0"
-                                           FontFamily="Segoe UI Variable Text, Segoe UI"
-                                           FontSize="10.5"
-                                           Foreground="#9B9BA4" />
-                            </StackPanel>
-                            <Border DockPanel.Dock="Right"
-                                    VerticalAlignment="Top"
-                                    Margin="10,0,0,0"
-                                    Padding="6,2"
-                                    CornerRadius="5"
-                                    Background="#18FFFFFF">
-                                <TextBlock Text="×"
-                                           FontFamily="Segoe UI Variable Text, Segoe UI"
-                                           FontSize="11"
-                                           FontWeight="SemiBold"
-                                           Foreground="#9B9BA4" />
-                            </Border>
-                        </DockPanel>
+                    <Border BorderBrush="#26FFFFFF"
+                            BorderThickness="1"
+                            Padding="13,11,13,13">
+                        <StackPanel>
+                            <DockPanel LastChildFill="False">
+                                <StackPanel DockPanel.Dock="Left">
+                                    <TextBlock x:Name="BubbleTitle"
+                                               Text="USAGE LIMITS"
+                                               FontFamily="Consolas, Lucida Console, Courier New"
+                                               FontSize="12.5"
+                                               FontWeight="Bold"
+                                               Foreground="#F5F5F7" />
+                                    <TextBlock x:Name="BubbleSub"
+                                               Text="Checking…"
+                                               Margin="0,2,0,0"
+                                               FontFamily="Consolas, Lucida Console, Courier New"
+                                               FontSize="10.5"
+                                               Foreground="#A1A1AA" />
+                                </StackPanel>
+                                <Border DockPanel.Dock="Right"
+                                        VerticalAlignment="Top"
+                                        Margin="10,0,0,0"
+                                        Padding="6,2"
+                                        CornerRadius="0"
+                                        Background="#FF22222A"
+                                        BorderBrush="#FF4A4A58"
+                                        BorderThickness="1">
+                                    <TextBlock Text="X"
+                                               FontFamily="Consolas, Lucida Console, Courier New"
+                                               FontSize="10.5"
+                                               FontWeight="Bold"
+                                               Foreground="#D4D4D8" />
+                                </Border>
+                            </DockPanel>
 
-                        <TextBlock x:Name="BubbleStatus"
-                                   Visibility="Collapsed"
-                                   Margin="0,10,0,0"
-                                   FontFamily="Segoe UI Variable Text, Segoe UI"
-                                   FontSize="11"
-                                   Foreground="#C9C9CF"
-                                   TextWrapping="Wrap" />
+                            <TextBlock x:Name="BubbleStatus"
+                                       Visibility="Collapsed"
+                                       Margin="0,10,0,0"
+                                       FontFamily="Consolas, Lucida Console, Courier New"
+                                       FontSize="11"
+                                       Foreground="#D4D4D8"
+                                       TextWrapping="Wrap" />
 
-                        <ItemsControl x:Name="ModelsList" Margin="0,10,0,0">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Margin="0,0,0,9">
-                                        <DockPanel LastChildFill="True">
-                                            <TextBlock DockPanel.Dock="Right"
-                                                       Text="{Binding PercentText}"
-                                                       FontFamily="Segoe UI Variable Text, Segoe UI"
-                                                       FontSize="11"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="{Binding TextBrush}"
-                                                       VerticalAlignment="Center"
-                                                       Margin="6,0,0,0" />
-                                            <TextBlock DockPanel.Dock="Right"
-                                                       Text="{Binding ResetText}"
-                                                       FontFamily="Segoe UI Variable Text, Segoe UI"
-                                                       FontSize="10"
-                                                       Foreground="#9B9BA4"
-                                                       VerticalAlignment="Center"
-                                                       Margin="6,0,0,0" />
-                                            <TextBlock Text="{Binding Label}"
-                                                       FontFamily="Segoe UI Variable Text, Segoe UI"
-                                                       FontSize="11"
-                                                       FontWeight="Medium"
-                                                       Foreground="#F3F3F4"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       VerticalAlignment="Center" />
-                                        </DockPanel>
-                                        <Grid Height="4" Width="262" HorizontalAlignment="Left" Margin="0,5,0,0">
-                                            <Border CornerRadius="2" Background="#2C2C31" />
-                                            <Border CornerRadius="2"
-                                                    Background="{Binding BarBrush}"
-                                                    HorizontalAlignment="Left"
-                                                    Width="{Binding BarWidth}" />
-                                        </Grid>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
+                            <ItemsControl x:Name="ModelsList" Margin="0,10,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,9">
+                                            <DockPanel LastChildFill="True">
+                                                <TextBlock DockPanel.Dock="Right"
+                                                           Text="{Binding PercentText}"
+                                                           FontFamily="Consolas, Lucida Console, Courier New"
+                                                           FontSize="11"
+                                                           FontWeight="Bold"
+                                                           Foreground="{Binding TextBrush}"
+                                                           VerticalAlignment="Center"
+                                                           Margin="6,0,0,0" />
+                                                <TextBlock DockPanel.Dock="Right"
+                                                           Text="{Binding ResetText}"
+                                                           FontFamily="Consolas, Lucida Console, Courier New"
+                                                           FontSize="10"
+                                                           Foreground="#A1A1AA"
+                                                           VerticalAlignment="Center"
+                                                           Margin="6,0,0,0" />
+                                                <TextBlock Text="{Binding Label}"
+                                                           FontFamily="Consolas, Lucida Console, Courier New"
+                                                           FontSize="11"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#F5F5F7"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           VerticalAlignment="Center" />
+                                            </DockPanel>
+                                            <Grid Height="7" Width="262" HorizontalAlignment="Left" Margin="0,5,0,0">
+                                                <Border CornerRadius="0"
+                                                        Background="#FF1E1E24"
+                                                        BorderBrush="#FF383844"
+                                                        BorderThickness="1" />
+                                                <Border CornerRadius="0"
+                                                        Margin="1"
+                                                        Background="{Binding BarBrush}"
+                                                        HorizontalAlignment="Left"
+                                                        Width="{Binding BarWidth}" />
+                                                <Rectangle IsHitTestVisible="False">
+                                                    <Rectangle.Fill>
+                                                        <DrawingBrush TileMode="Tile" Viewport="0,0,8,7" ViewportUnits="Absolute">
+                                                            <DrawingBrush.Drawing>
+                                                                <GeometryDrawing Brush="#99141418">
+                                                                    <GeometryDrawing.Geometry>
+                                                                        <RectangleGeometry Rect="6,0,2,7" />
+                                                                    </GeometryDrawing.Geometry>
+                                                                </GeometryDrawing>
+                                                            </DrawingBrush.Drawing>
+                                                        </DrawingBrush>
+                                                    </Rectangle.Fill>
+                                                </Rectangle>
+                                            </Grid>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
                 </Border>
-                <Path Data="M 0,0 L 6,6 L 12,0 Z"
-                      Fill="#F518181B"
+                <Path Data="M 0,0 L 0,3 L 3,3 L 3,6 L 6,6 L 6,9 L 9,9 L 9,6 L 12,6 L 12,3 L 15,3 L 15,0 Z"
+                      Fill="#FF3A3A46"
                       HorizontalAlignment="Center"
                       Margin="0,-1,0,0" />
             </StackPanel>

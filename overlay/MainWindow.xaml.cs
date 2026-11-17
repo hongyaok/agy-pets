@@ -73,6 +73,7 @@ public partial class MainWindow : Window
 
     private bool _isPollingConfig;
     private bool _isFetchingUsage;
+    private int _failedPolls;
 
     public MainWindow(int port)
     {
@@ -359,8 +360,15 @@ public partial class MainWindow : Window
         {
             string json = await _http.GetStringAsync($"{_baseUrl}/api/config");
             var cfg = JsonSerializer.Deserialize<PetConfig>(json, _jsonOptions);
+            _failedPolls = 0;
             if (cfg is null)
             {
+                return;
+            }
+
+            if (cfg.OverlayEnabled == false)
+            {
+                Application.Current.Shutdown();
                 return;
             }
 
@@ -393,7 +401,11 @@ public partial class MainWindow : Window
         }
         catch
         {
-            // Ignore transient polling errors while sidecar starts/restarts
+            _failedPolls++;
+            if (_failedPolls >= 5)
+            {
+                Application.Current.Shutdown();
+            }
         }
         finally
         {
@@ -705,7 +717,7 @@ public partial class MainWindow : Window
         _isFetchingUsage = true;
         try
         {
-            BubbleTitle.Text = "Usage limits";
+            BubbleTitle.Text = "USAGE LIMITS";
             BubbleSub.Text = $"{_petDisplayName} · Checking…";
             BubbleStatus.Text = "Checking remaining usage…";
             BubbleStatus.Visibility = Visibility.Visible;
@@ -803,7 +815,7 @@ public partial class MainWindow : Window
                     ResetText: sharedReset ? "" : FormatResetTime(m.ResetTime),
                     BarBrush: barBrush,
                     TextBrush: textBrush,
-                    BarWidth: hasFrac ? Math.Round(frac * 262.0, 1) : 0.0);
+                    BarWidth: hasFrac ? Math.Round(frac * 260.0, 1) : 0.0);
             }).ToList();
 
             BubbleStatus.Visibility = Visibility.Collapsed;
@@ -1145,6 +1157,9 @@ public partial class MainWindow : Window
 
         [JsonPropertyName("behavior")]
         public string? Behavior { get; set; }
+
+        [JsonPropertyName("overlayEnabled")]
+        public bool? OverlayEnabled { get; set; }
     }
 
     private sealed class UsageResponse

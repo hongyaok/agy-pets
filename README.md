@@ -2,11 +2,7 @@
 
 Pixel-art pets from [petdex.dev](https://petdex.dev) inside your Google Antigravity auxiliary pane, with a live model quota popover and an optional always-on-top Windows desktop overlay.
 
-![Antigravity Pets: Wide Dark Sidecar](assets/sidecar-wide-dark.png)
-
-| Wide Light Pane | Narrow Auxiliary Pane | Model Quota Popover |
-| :---: | :---: | :---: |
-| ![Wide Light](assets/sidecar-wide-light.png) | ![Narrow Light](assets/sidecar-narrow-light.png) | ![Usage Dark](assets/sidecar-usage-dark.png) |
+![Antigravity Pets](assets/preview.jpg)
 
 ## Features
 
