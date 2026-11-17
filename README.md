@@ -4,6 +4,10 @@ Pixel-art pets from [petdex.dev](https://petdex.dev) inside your Google Antigrav
 
 ![Antigravity Pets](assets/preview.jpg)
 
+| Click your pet to check live model usage |
+| :---: |
+| ![Click Pet for Model Usage Limits](assets/usage-overlay.png) |
+
 ## Features
 
 - **Responsive sidecar layout**: Scales with the auxiliary pane. Narrow panes stack the stage, controls, and catalog in one column; wider panes (`680 px+`) place the stage and behavior controls alongside the pet catalog.
